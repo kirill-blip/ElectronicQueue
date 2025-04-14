@@ -9,7 +9,7 @@ function Header() {
                     <img src="/logo.png" alt="Логотип" />
                 </Link>
             </div>
-            <h4>Электронная Очередь</h4>
+            <h4>Электронная очередь</h4>
         </header>
     );
 }
