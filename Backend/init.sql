@@ -1,0 +1,43 @@
+DROP TABLE IF EXISTS entry;
+DROP TABLE IF EXISTS user_admin;
+DROP TABLE IF EXISTS block_list;
+DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS "admin";
+
+CREATE TABLE "user" (
+                        id SERIAL PRIMARY KEY,
+                        chat_id VARCHAR(255),
+                        first_name VARCHAR(100),
+                        last_name VARCHAR(100),
+                        phone VARCHAR(20)
+);
+
+CREATE TABLE "admin" (
+                         id SERIAL PRIMARY KEY,
+                         first_name VARCHAR(100),
+                         last_name VARCHAR(100),
+                         password VARCHAR(255),
+                         table_number INTEGER,
+                         status BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE entry (
+                       id SERIAL PRIMARY KEY,
+                       ticket_number VARCHAR(50),
+                       user_id INTEGER REFERENCES "user"(id),
+                       admin_id INTEGER REFERENCES "admin"(id),
+                       date TIMESTAMP,
+                       status VARCHAR(50)
+);
+
+CREATE TABLE block_list (
+                            id SERIAL PRIMARY KEY,
+                            chat_id VARCHAR(255),
+                            first_name VARCHAR(100),
+                            last_name VARCHAR(100),
+                            phone VARCHAR(20)
+);
+
+CREATE TABLE user_admin (
+                            user_id INTEGER REFERENCES "user"(id)
+);

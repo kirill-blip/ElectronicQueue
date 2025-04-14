@@ -1,0 +1,50 @@
+-- Удаление таблиц (в правильном порядке, учитывая зависимости)
+DROP TABLE IF EXISTS entry;
+DROP TABLE IF EXISTS user_admin;
+DROP TABLE IF EXISTS block_list;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS admin;
+
+-- Создание таблицы user
+CREATE TABLE user (
+    id SERIAL PRIMARY KEY,
+    chat_id VARCHAR(255),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    phone VARCHAR(20)
+);
+
+-- Создание таблицы admin
+CREATE TABLE admin (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    password VARCHAR(255),
+    table_number VARCHAR(50),
+    chat_id VARCHAR(255),
+    status BOOLEAN
+);
+
+-- Создание таблицы entry
+CREATE TABLE entry (
+    id SERIAL PRIMARY KEY,
+    ticket_number VARCHAR(50),
+    user_id INTEGER REFERENCES user(id),
+    admin_id INTEGER,
+    date TIMESTAMP,
+    status VARCHAR(50)
+);
+
+-- Создание таблицы block_list
+CREATE TABLE block_list (
+    id SERIAL PRIMARY KEY,
+    chat_id VARCHAR(255),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    phone VARCHAR(20)
+);
+
+-- Создание таблицы user_admin (похоже на связующую таблицу)
+CREATE TABLE user_admin (
+    user_id INTEGER REFERENCES user(id)
+);
