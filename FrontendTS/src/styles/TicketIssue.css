@@ -1,0 +1,53 @@
+.ticket-issue-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  background-color: #f9f9f9;
+}
+
+.ticket-issue-header {
+  align-self: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.ticket-issue-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-issue-label {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.ticket-issue-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.ticket-issue-button {
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.ticket-issue-button:hover {
+  background-color: #0056b3;
+}

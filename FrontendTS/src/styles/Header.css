@@ -1,0 +1,19 @@
+.container-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #00274d;
+    color: #ffffff;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo img {
+    height: 40px;
+    width: auto;
+}
+
+h3 {
+    font-size: 20px;
+    margin: 0;
+}
