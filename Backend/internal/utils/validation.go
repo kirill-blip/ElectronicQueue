@@ -7,7 +7,7 @@ import (
 	"unicode/utf8"
 )
 
-var russianOnlyRegex = regexp.MustCompile(`^[А-Яа-яЁё]+$`)
+var russianAndKazakhRegex = regexp.MustCompile(`^[А-Яа-яЁёӘәҒғҚқҢңҮүҰұӨөҺһ]+$`)
 
 func LoginValid(login string) error {
 	if login == "" {
@@ -29,7 +29,7 @@ func LastFirstNameValid(name string) bool {
 		return false
 	}
 
-	if !russianOnlyRegex.MatchString(name) {
+	if !russianAndKazakhRegex.MatchString(name) {
 		return false
 	}
 

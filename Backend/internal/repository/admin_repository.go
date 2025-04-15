@@ -10,6 +10,7 @@ import (
 type AdminRepository interface {
 	AddAdmin(admin models.Admin) error
 	GetAdmins() ([]models.Admin, error)
+	GetAdmin(login string) (models.Admin, error)
 }
 
 type AdminRepositoryImpl struct {
@@ -31,7 +32,7 @@ func (r *AdminRepositoryImpl) GetAdmins() ([]models.Admin, error) {
 	var admins []models.Admin
 
 	rows, err := r.db.Query(`
-    SELECT first_name, last_name, password, table_number
+    SELECT login, password, table_number
     FROM "admin"`)
 
 	if err != nil {
@@ -42,7 +43,7 @@ func (r *AdminRepositoryImpl) GetAdmins() ([]models.Admin, error) {
 	for rows.Next() {
 		var admin models.Admin
 
-		if err := rows.Scan(&admin.FirstName, &admin.LastName, &admin.Password, &admin.TableNumber); err != nil {
+		if err := rows.Scan(&admin.Login, &admin.Password, &admin.TableNumber); err != nil {
 			slog.Warn(err.Error())
 			return nil, apperrors.ProblemWithDB
 		}
@@ -51,4 +52,35 @@ func (r *AdminRepositoryImpl) GetAdmins() ([]models.Admin, error) {
 	}
 
 	return admins, nil
+}
+
+func (r *AdminRepositoryImpl) GetAdmin(login string) (models.Admin, error) {
+	var admin models.Admin
+
+	query := `SELECT login, password FROM "admin" WHERE login = $1`
+	err := r.db.QueryRow(query, login).Scan(&admin.Login, &admin.Password)
+
+	if err == sql.ErrNoRows {
+		return models.Admin{}, apperrors.LogInWrongLogin
+	} else if err != nil {
+		return models.Admin{}, err
+	}
+
+	return admin, nil
+}
+
+func (r *AdminRepositoryImpl) GetAdminForPanel(id int) (models.AdminPanel, error) {
+	var admin models.AdminPanel
+
+	query := `SELECT first_name, last_name, table_number  FROM "admin" WHERE id = $1 LIMIT 1`
+
+	err := r.db.QueryRow(query, id).Scan(&admin.FirstName, &admin.LastName, &admin.Table)
+
+	if err == sql.ErrNoRows {
+		return models.AdminPanel{}, apperrors.ProblemWithDB
+	} else if err != nil {
+		return models.AdminPanel{}, err
+	}
+
+	return admin, nil
 }
