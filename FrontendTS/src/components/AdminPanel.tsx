@@ -1,3 +1,4 @@
+import "../styles/AdminPanel.css";
 import axios from "axios";
 import { useState } from "react";
 import { AdminInfo } from "../models/Admin";
@@ -36,7 +37,7 @@ function AdminPanel() {
     TableNumber: 0,
   });
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const getAdmin = () => {
     axios
@@ -56,9 +57,9 @@ function AdminPanel() {
         if (error.response.status == 401) {
           refreshToken().then((success) => {
             if (success) {
-              getAdmin()
+              getAdmin();
             } else {
-              navigate("/login")
+              navigate("/login");
             }
           });
         }
@@ -69,12 +70,19 @@ function AdminPanel() {
 
   return (
     <div>
-      <h1>Панель администратора</h1>
-      <p>
-        Добро пожаловать, {admin.FirstName} {admin.LastName}! Ваш номер стола:{" "}
-        {admin.TableNumber}
-      </p>
-      <button>Logout</button>
+      <header>
+        <h1>Панель администратора</h1>
+      </header>
+      <div>
+        <p>
+          Добро пожаловать,{" "}
+          <span>{`${admin.FirstName} ${admin.LastName}`}</span>! Ваш номер
+          стола: <span>{admin.TableNumber}</span>
+        </p>
+        <button>Вызвать клиента</button>
+
+        <button onClick={() => navigate("/login")}>Выйти</button>
+      </div>
     </div>
   );
 }

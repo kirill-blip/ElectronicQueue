@@ -1,4 +1,4 @@
-import Admin from "./Admin";
+import { Admin } from "./Admin";
 import User from "./User";
 
 type Entry = {
@@ -11,7 +11,7 @@ type Entry = {
 
 enum EntryStatus {
     Processing = "Processing",
-    CanceledByUser =  "CanceledByUser", 
+    CanceledByUser = "CanceledByUser",
     Canceled = "Canceled",
     Accepted = "Accepted"
 }
