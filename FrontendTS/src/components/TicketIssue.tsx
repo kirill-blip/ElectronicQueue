@@ -38,6 +38,7 @@ function TicketIssue() {
   return (
     <div className="ticket-issue-container">
       <form className="ticket-issue-form" onSubmit={handleSumbitButton}>
+        <h3 className="ticket-issue-header">Запись на прием</h3>
         <p className="ticket-issue-label">Введите имя:</p>
         <input
           className="ticket-issue-input"

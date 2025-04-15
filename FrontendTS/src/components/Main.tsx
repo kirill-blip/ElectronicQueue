@@ -1,4 +1,4 @@
-import "../styles/Registration.css";
+import "../styles/MainPage.css";
 import { useNavigate } from "react-router-dom";
 
 function Main() {

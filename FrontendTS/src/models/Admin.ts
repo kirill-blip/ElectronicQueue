@@ -1,4 +1,4 @@
-type Admin = {
+export type Admin = {
     FirstName: string;
     LastName: string;
     Password: string;
@@ -6,4 +6,8 @@ type Admin = {
     TableNumber: number;
 }
 
-export default Admin;
+export type AdminInfo = {
+    FirstName: string;
+    LastName: string;
+    TableNumber: number;
+}

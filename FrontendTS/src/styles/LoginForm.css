@@ -1,4 +1,4 @@
-.ticket-issue-container {
+.login-form {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -6,14 +6,14 @@
   background-color: #f9f9f9;
 }
 
-.ticket-issue-header {
+.form-header {
   align-self: center;
   font-size: 24px;
   font-weight: bold;
   color: #333;
 }
 
-.ticket-issue-form {
+.form {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -24,20 +24,20 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.ticket-issue-label {
+.label {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
 }
 
-.ticket-issue-input {
+.input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
 }
 
-.ticket-issue-button {
+.button {
   padding: 10px;
   border: none;
   border-radius: 4px;
@@ -48,6 +48,26 @@
   transition: background-color 0.3s;
 }
 
-.ticket-issue-button:hover {
+.button:hover {
   background-color: #0056b3;
+}
+
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.visibility-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  z-index: 1;
+  bottom: 5px;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
 }
