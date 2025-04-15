@@ -21,6 +21,10 @@ func AdminServiceInit(adminRepo repository.AdminRepository) AdminService {
 }
 
 func (s *AdminServiceImpl) RegisterAdmin(admin models.Admin) error {
+	if err := utils.LoginValid(admin.Login); err != nil {
+		return err
+	}
+
 	if admin.TableNumber <= 0 {
 		return apperrors.InvalidPassword
 	}

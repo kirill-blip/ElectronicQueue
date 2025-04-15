@@ -43,11 +43,37 @@ func (a *AdminHandler) RegisterAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ResponseInJSON(w, http.StatusCreated, "admin has been registered")
+	response := models.Response{
+		Message: "admin has been registered",
+	}
+
+	utils.ResponseInJSON(w, http.StatusCreated, response)
+
+}
+
+func (a *AdminHandler) LogInAdmin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	logInData := models.LogIn{}
+
+	err := json.NewDecoder(r.Body).Decode(&logInData)
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
 
 }
 
 func (a *AdminHandler) GetAdmins(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet || r.URL.Path != "/api/admin" {
+		utils.ErrorInJSON(w, http.StatusMethodNotAllowed, nil)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 
 	admins, err := a.adminService.GetAdmins()

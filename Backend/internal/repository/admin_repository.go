@@ -21,8 +21,8 @@ func AdminRepositoryInit(db *sql.DB) AdminRepository {
 }
 func (r *AdminRepositoryImpl) AddAdmin(admin models.Admin) error {
 	_ = r.db.QueryRow(`
-    INSERT INTO "admin" (first_name, last_name, password, table_number)
-    VALUES ($1, $2, $3, $4)`, admin.FirstName, admin.LastName, admin.Password, admin.TableNumber)
+    INSERT INTO "admin" (login, first_name, last_name, password, table_number)
+    VALUES ($1, $2, $3, $4, $5)`, admin.Login, admin.FirstName, admin.LastName, admin.Password, admin.TableNumber)
 
 	return nil
 }
