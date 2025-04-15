@@ -1,0 +1,87 @@
+package service
+
+import (
+	"backend/internal/apperrors"
+	"backend/internal/repository"
+	"backend/internal/utils"
+	"backend/models"
+)
+
+type AdminService interface {
+	RegisterAdmin(admin models.Admin) error
+	GetAdmins() ([]models.Admin, error)
+	Login(login, password string) (models.TokenResponse, error)
+}
+
+type AdminServiceImpl struct {
+	adminRepo repository.AdminRepository
+}
+
+func AdminServiceInit(adminRepo repository.AdminRepository) AdminService {
+	return &AdminServiceImpl{adminRepo}
+}
+
+func (s *AdminServiceImpl) RegisterAdmin(admin models.Admin) error {
+	if err := utils.LoginValid(admin.Login); err != nil {
+		return err
+	}
+
+	if admin.TableNumber <= 0 {
+		return apperrors.InvalidPassword
+	}
+
+	if !utils.LastFirstNameValid(admin.LastName) {
+		return apperrors.InvalidLastName
+	}
+
+	if !utils.LastFirstNameValid(admin.FirstName) {
+		return apperrors.InvalidFirstName
+	}
+
+	hashPassword, err := utils.HashPassword(admin.Password)
+	if err != nil {
+		return apperrors.ProblemWithServer
+	}
+
+	admin.Password = hashPassword
+
+	err = s.adminRepo.AddAdmin(admin)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *AdminServiceImpl) GetAdmins() ([]models.Admin, error) {
+	admins, err := s.adminRepo.GetAdmins()
+	if err != nil {
+		return nil, err
+	}
+
+	return admins, nil
+}
+
+func (s *AdminServiceImpl) Login(login, password string) (models.TokenResponse, error) {
+	admin, err := s.adminRepo.GetAdmin(login)
+	if err != nil {
+		return models.TokenResponse{}, err
+	}
+
+	if exists := utils.CheckPasswordHash(password, admin.Password); !exists {
+		return models.TokenResponse{}, apperrors.LogInWrongPassword
+	}
+
+	td, err := utils.CreateTokens(admin.ID)
+	if err != nil {
+		return models.TokenResponse{}, err
+	}
+
+	response := models.TokenResponse{
+		AccessToken:  td.AccessToken,
+		RefreshToken: td.RefreshToken,
+	}
+
+	return response, nil
+}
