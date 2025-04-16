@@ -21,6 +21,7 @@ type AdminRepositoryImpl struct {
 func AdminRepositoryInit(db *sql.DB) AdminRepository {
 	return &AdminRepositoryImpl{db: db}
 }
+
 func (r *AdminRepositoryImpl) AddAdmin(admin models.Admin) error {
 	_, err := r.db.Exec(`
     INSERT INTO "admin" (login, first_name, last_name, password, table_number)

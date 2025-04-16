@@ -18,6 +18,7 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 	mux.HandleFunc("POST /api/admin-registration", adminHandler.RegisterAdmin)
 	mux.HandleFunc("GET /api/admin", adminHandler.GetAdmins)
 	mux.HandleFunc("POST /api/admin/login", adminHandler.LogInAdmin)
+	mux.HandleFunc("POST /api/admin/logout", adminHandler.LogOutAdmin)
 	mux.HandleFunc("POST /api/refresh", adminHandler.Refresh)
 	mux.HandleFunc("GET /api/admin/get", middleware.AdminAuthMiddleware(adminHandler.GetAdminDesktop))
 	//mux.HandleFunc("GET /api/")

@@ -24,27 +24,29 @@ function LoginForm() {
   const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const handleSumbit = (e: React.FormEvent) => {
+  const handleSumbit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    axios
-      .post("http://localhost:8080/api/admin/login", {
-        login: adminEntity.Login,
-        password: adminEntity.Password,
-      })
-      .then(function (response) {
-        const token = response.data.token;
-        const cookies = new Cookies();
-        cookies.set("admin_id", token, { path: "/" });
-
-        navigate("/admin-panel");
-
-        console.log("Success");
-      })
-      .catch(function () {
-        setError(true);
-        console.log("Error");
+    try {
+      const response = await fetch("http://localhost:8080/api/admin/login", {
+        method: "POST",
+        body: JSON.stringify({
+          login: adminEntity.Login,
+          password: adminEntity.Password,
+        }),
+        credentials: "include",
       });
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      } else {
+        navigate("/admin-panel");
+      }
+
+    } catch (error) {
+      setError(true);
+      console.error("Error during login:", error);
+    }
   };
 
   const togglePasswordVisibility = () => {
