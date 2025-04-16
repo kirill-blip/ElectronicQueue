@@ -17,6 +17,7 @@ var (
 	LogInWrongLogin    = errors.New("wrong login")
 	LogInWrongPassword = errors.New("wrong password")
 	ServerError        = errors.New("server error")
+	InvalidAdminID     = errors.New("invalid admin id")
 )
 
 func FindErrorCode(err error) int {

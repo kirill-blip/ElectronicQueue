@@ -3,7 +3,6 @@ package utils
 import (
 	"backend/models"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"net/http"
 	"strings"
 	"time"
@@ -12,26 +11,25 @@ import (
 func CreateTokens(adminID int) (*models.TokenDetails, error) {
 	td := &models.TokenDetails{}
 	td.AtExpires = time.Now().Add(15 * time.Minute).Unix()
-	td.AccessUuid = uuid.New().String()
-
 	td.RtExpires = time.Now().Add(7 * 24 * time.Hour).Unix()
-	td.RefreshUuid = uuid.New().String()
 
 	var err error
 
-	atClaims := jwt.MapClaims{}
-	atClaims["authorized"] = true
-	atClaims["admin_id"] = adminID
-	atClaims["exp"] = td.AtExpires
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	td.AccessToken, err = token.SignedString([]byte("ACCESS_SSECRETT"))
+	atClaims := jwt.MapClaims{
+		"authorized": true,
+		"admin_id":   adminID,
+		"exp":        td.AtExpires,
+	}
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	td.AccessToken, err = accessToken.SignedString([]byte("ACCESS_SSECRETT"))
 	if err != nil {
 		return nil, err
 	}
 
-	rtClaims := jwt.MapClaims{}
-	rtClaims["admin_id"] = adminID
-	rtClaims["exp"] = td.RtExpires
+	rtClaims := jwt.MapClaims{
+		"admin_id": adminID,
+		"exp":      td.RtExpires,
+	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
 	td.RefreshToken, err = refreshToken.SignedString([]byte("REFRESH_SSECRETT"))
 	if err != nil {
@@ -39,6 +37,24 @@ func CreateTokens(adminID int) (*models.TokenDetails, error) {
 	}
 
 	return td, nil
+}
+
+func CreateAccessToken(adminID int) (string, error) {
+	expirationTime := time.Now().Add(15 * time.Minute).Unix()
+
+	atClaims := jwt.MapClaims{
+		"authorized": true,
+		"admin_id":   adminID,
+		"exp":        expirationTime,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	accessToken, err := token.SignedString([]byte("ACCESS_SSECRETT"))
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
 }
 
 func ExtractToken(r *http.Request) string {

@@ -10,7 +10,8 @@ import (
 type AdminService interface {
 	RegisterAdmin(admin models.Admin) error
 	GetAdmins() ([]models.Admin, error)
-	Login(login, password string) (models.TokenResponse, error)
+	Login(login, password string) (int, error)
+	GetAdminDesktop(adminID int) (models.AdminPanel, error)
 }
 
 type AdminServiceImpl struct {
@@ -63,25 +64,28 @@ func (s *AdminServiceImpl) GetAdmins() ([]models.Admin, error) {
 	return admins, nil
 }
 
-func (s *AdminServiceImpl) Login(login, password string) (models.TokenResponse, error) {
+func (s *AdminServiceImpl) Login(login, password string) (int, error) {
 	admin, err := s.adminRepo.GetAdmin(login)
 	if err != nil {
-		return models.TokenResponse{}, err
+		return 0, err
 	}
 
 	if exists := utils.CheckPasswordHash(password, admin.Password); !exists {
-		return models.TokenResponse{}, apperrors.LogInWrongPassword
+		return 0, apperrors.LogInWrongPassword
 	}
 
-	td, err := utils.CreateTokens(admin.ID)
+	return admin.ID, nil
+}
+
+func (s *AdminServiceImpl) GetAdminDesktop(adminID int) (models.AdminPanel, error) {
+	if adminID <= 0 {
+		return models.AdminPanel{}, apperrors.ProblemWithDB
+	}
+
+	admin, err := s.adminRepo.GetAdminForPanel(adminID)
 	if err != nil {
-		return models.TokenResponse{}, err
+		return models.AdminPanel{}, err
 	}
 
-	response := models.TokenResponse{
-		AccessToken:  td.AccessToken,
-		RefreshToken: td.RefreshToken,
-	}
-
-	return response, nil
+	return admin, nil
 }

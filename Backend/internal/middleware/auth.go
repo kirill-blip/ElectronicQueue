@@ -2,8 +2,11 @@ package middleware
 
 import (
 	"backend/internal/utils"
+	"context"
 	"github.com/golang-jwt/jwt/v5"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 func TokenAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -19,6 +22,37 @@ func TokenAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		next(w, r)
+		claims := token.Claims.(jwt.MapClaims)
+
+		adminIDFloat, ok := claims["admin_id"].(float64)
+		if !ok {
+			log.Println("admin_id is missing or not a number")
+			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		adminID := int(adminIDFloat)
+		ctx := context.WithValue(r.Context(), "admin_id", adminID)
+
+		next(w, r.WithContext(ctx))
+	}
+}
+
+func AdminAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("admin_id")
+		if err != nil {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		adminID, err := strconv.Atoi(cookie.Value)
+		if err != nil {
+			http.Error(w, "invalid admin_id", http.StatusBadRequest)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "admin_id", adminID)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
