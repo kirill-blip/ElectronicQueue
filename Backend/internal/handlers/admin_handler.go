@@ -6,6 +6,7 @@ import (
 	"backend/internal/utils"
 	"backend/models"
 	"encoding/json"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"log/slog"
 	"net/http"
@@ -123,7 +124,7 @@ func (a *AdminHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	adminIDFloat, ok := claims["admin_id"].(float64)
+	adminID, ok := claims["admin_id"].(int)
 	if !ok {
 		slog.Warn("Не нашел admin_id")
 
@@ -131,9 +132,7 @@ func (a *AdminHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	adminID := int(adminIDFloat)
-
-	newTokens, err := utils.CreateTokens(adminID)
+	newTokens, err := utils.CreateAccessToken(adminID)
 	if err != nil {
 		slog.Warn(err.Error())
 
@@ -142,9 +141,43 @@ func (a *AdminHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := models.TokenResponse{
-		AccessToken:  newTokens.AccessToken,
-		RefreshToken: newTokens.RefreshToken,
+		AccessToken: newTokens,
 	}
 
 	utils.ResponseInJSON(w, http.StatusOK, response)
+}
+
+func (a *AdminHandler) GetAdminDesktop(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodGet || r.URL.Path != "/api/admin/get" {
+		utils.ErrorInJSON(w, http.StatusMethodNotAllowed, nil)
+		return
+	}
+
+	slog.Info("GetAdminDesktop")
+
+	adminIDValue := r.Context().Value("admin_id")
+	adminID, ok := adminIDValue.(int)
+	if !ok {
+		slog.Info("admin_id not found or wrong type in context")
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	fmt.Println(adminID)
+
+	admin, err := a.adminService.GetAdminDesktop(adminID)
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+	slog.Info("okok")
+	slog.Info(admin.LastName, admin.FirstName, admin.Table)
+
+	utils.ResponseInJSON(w, http.StatusOK, admin)
 }

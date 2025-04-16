@@ -11,6 +11,7 @@ type AdminService interface {
 	RegisterAdmin(admin models.Admin) error
 	GetAdmins() ([]models.Admin, error)
 	Login(login, password string) (models.TokenResponse, error)
+	GetAdminDesktop(adminID int) (models.AdminPanel, error)
 }
 
 type AdminServiceImpl struct {
@@ -84,4 +85,17 @@ func (s *AdminServiceImpl) Login(login, password string) (models.TokenResponse, 
 	}
 
 	return response, nil
+}
+
+func (s *AdminServiceImpl) GetAdminDesktop(adminID int) (models.AdminPanel, error) {
+	if adminID <= 0 {
+		return models.AdminPanel{}, apperrors.ProblemWithDB
+	}
+
+	admin, err := s.adminRepo.GetAdminForPanel(adminID)
+	if err != nil {
+		return models.AdminPanel{}, err
+	}
+
+	return admin, nil
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"backend/internal/middleware"
 	"backend/internal/repository"
 	"backend/internal/service"
 	"database/sql"
@@ -18,7 +19,7 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 	mux.HandleFunc("GET /api/admin", adminHandler.GetAdmins)
 	mux.HandleFunc("POST /api/admin/login", adminHandler.LogInAdmin)
 	mux.HandleFunc("POST /api/refresh", adminHandler.Refresh)
-	mux.HandleFunc("POST /api/admin/get", func(writer http.ResponseWriter, request *http.Request) {})
+	mux.HandleFunc("GET /api/admin/get", middleware.TokenAuthMiddleware(adminHandler.GetAdminDesktop))
 	//mux.HandleFunc("GET /api/")
 
 	return mux, nil

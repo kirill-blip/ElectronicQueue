@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/db"
 	"backend/internal/handlers"
+	"backend/internal/middleware"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -23,6 +24,8 @@ func main() {
 
 	mux, _ := handlers.InitHandler(database)
 
-	http.ListenAndServe(":8080", mux)
+	corsMux := middleware.CorsMiddleware(mux)
+
+	http.ListenAndServe(":8080", corsMux)
 	slog.Info("Server started in port 8080")
 }
