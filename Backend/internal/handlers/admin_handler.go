@@ -6,11 +6,12 @@ import (
 	"backend/internal/utils"
 	"backend/models"
 	"encoding/json"
-	"github.com/golang-jwt/jwt/v5"
 	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type AdminHandler struct {
@@ -89,8 +90,25 @@ func (a *AdminHandler) LogInAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
-
 	utils.ResponseInJSON(w, http.StatusOK, id)
+}
+
+func (a *AdminHandler) LogOutAdmin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	cookie := &http.Cookie{
+		Name:     "admin_id",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		Expires:  time.Now().Add(-time.Hour),
+	}
+
+	http.SetCookie(w, cookie)
+	slog.Info("LogOut admin")
+
+	utils.ResponseInJSON(w, http.StatusOK, nil)
 }
 
 func (a *AdminHandler) GetAdmins(w http.ResponseWriter, r *http.Request) {

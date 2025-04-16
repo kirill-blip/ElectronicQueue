@@ -1,43 +1,43 @@
 import "../styles/AdminPanel.css";
-import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminInfo } from "../models/Admin";
 import { useNavigate } from "react-router-dom";
 import { Alert, Button, Card, Container } from "react-bootstrap";
 import User from "../models/User";
 
-async function refreshToken(): Promise<boolean> {
-  try {
-    const response = await fetch("/api/refresh", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("refreshToken")}`,
-      },
-    });
-
-    if (response.ok) {
-      const data: { access_token: string; refresh_token: string } =
-        await response.json();
-
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("refresh_token", data.refresh_token);
-
-      return true;
-    }
-
-    return false;
-  } catch (error) {
-    console.error("Error refreshing token:", error);
-    return false;
-  }
-}
-
-function AdminPanel() {
-  const [admin, setAdmin] = useState<AdminInfo>({
+async function getAdmin(): Promise<AdminInfo> {
+  let admin: AdminInfo = {
     FirstName: "",
     LastName: "",
     TableNumber: 0,
-  });
+  };
+
+  try {
+    const response = await fetch("http://localhost:8080/api/admin/get", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      const json = await response.json();
+      admin = {
+        FirstName: json.first_name,
+        LastName: json.last_name,
+        TableNumber: json.table_number,
+      };
+    } else if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
+  } catch (error) {}
+
+  return admin;
+}
+
+function AdminPanel() {
+  const [admin, setAdmin] = useState<AdminInfo>();
 
   const [client, setUser] = useState<User>({
     FirstName: "Кирилл",
@@ -49,33 +49,6 @@ function AdminPanel() {
   const [noClient, setNoClient] = useState<boolean>(false);
 
   const navigate = useNavigate();
-
-  const getAdmin = () => {
-    axios
-      .get("http://localhost:8080/api/admin/get", {
-        withCredentials: true,
-      })
-      .then(function (response) {
-        setAdmin({
-          FirstName: response.data.first_name,
-          LastName: response.data.last_name,
-          TableNumber: response.data.table_number,
-        });
-      })
-      .catch(function (error) {
-        if (error.response.status == 401) {
-          refreshToken().then((success) => {
-            if (success) {
-              getAdmin();
-            } else {
-              navigate("/login");
-            }
-          });
-        }
-      });
-  };
-
-  getAdmin();
 
   const handleCallClient = () => {
     if (!noClient) {
@@ -92,6 +65,31 @@ function AdminPanel() {
   const handleRejectClient = () => {
     setHasClient(false);
   };
+
+  const handleLogOut =async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/admin/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        const json = await response.json();
+        console.log(json);
+        navigate("/login");
+      } else if (response.status === 401) {
+        throw new Error("Unauthorized");
+      }
+    } catch (error) {}
+  }
+
+  useEffect(() => {
+    if (!admin) {
+      getAdmin().then((result) => {
+        setAdmin(result);
+      });
+    }
+  }, []);
 
   return (
     <div>
@@ -142,12 +140,16 @@ function AdminPanel() {
               <Card>
                 <Card.Header as="h5">Информация о администраторе</Card.Header>
                 <Card.Body>
-                  <Card.Text as="h5">Имя: Кирилл Голубенко</Card.Text>
-                  <Card.Text as="h5">Стол номер: 2</Card.Text>
+                  <Card.Text as="h5">
+                    Имя: {admin?.FirstName} {admin?.LastName}
+                  </Card.Text>
+                  <Card.Text as="h5">
+                    Стол номер: {admin?.TableNumber}
+                  </Card.Text>
                   <Button
                     variant="danger"
                     className="mt-2"
-                    onClick={() => navigate("/login")}
+                    onClick={handleLogOut}
                   >
                     Выйти
                   </Button>
