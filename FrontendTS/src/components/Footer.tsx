@@ -1,16 +1,31 @@
+import { Container, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import "../styles/Footer.css";
 
 function Footer() {
-    return (
-        <footer className="container-footer">
-            <p>© 2025 Astana IT College. Все права защищены.</p>
-            <div className="footer-links">
-                <Link to="/policy">Политика конфиденциальности</Link>
-                <Link to="/contacts">Контакты</Link>
+  return (
+    <footer className="mt-auto">
+      <Navbar
+        fixed="bottom"
+        className="bg-body-secondary d-flex justify-content-center align-items-center border-top text-center"
+      >
+        <Container className="d-flex flex-column align-items-center">
+          <div>
+            <Navbar.Text>
+              &copy; 2025 Astana IT College. Все права защищены.
+            </Navbar.Text>
+            <div className="me-3">
+              <Link to="/policy" className="text-dark-emphasis me-3">
+                Политика конфиденциальности
+              </Link>
+              <Link to="/contacts" className="text-dark-emphasis">
+                Контакты
+              </Link>
             </div>
-        </footer>
-    );
+          </div>
+        </Container>
+      </Navbar>
+    </footer>
+  );
 }
 
 export default Footer;
