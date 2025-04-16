@@ -10,7 +10,7 @@ import (
 type AdminService interface {
 	RegisterAdmin(admin models.Admin) error
 	GetAdmins() ([]models.Admin, error)
-	Login(login, password string) (models.TokenResponse, error)
+	Login(login, password string) (int, error)
 	GetAdminDesktop(adminID int) (models.AdminPanel, error)
 }
 
@@ -64,27 +64,17 @@ func (s *AdminServiceImpl) GetAdmins() ([]models.Admin, error) {
 	return admins, nil
 }
 
-func (s *AdminServiceImpl) Login(login, password string) (models.TokenResponse, error) {
+func (s *AdminServiceImpl) Login(login, password string) (int, error) {
 	admin, err := s.adminRepo.GetAdmin(login)
 	if err != nil {
-		return models.TokenResponse{}, err
+		return 0, err
 	}
 
 	if exists := utils.CheckPasswordHash(password, admin.Password); !exists {
-		return models.TokenResponse{}, apperrors.LogInWrongPassword
+		return 0, apperrors.LogInWrongPassword
 	}
 
-	td, err := utils.CreateTokens(admin.ID)
-	if err != nil {
-		return models.TokenResponse{}, err
-	}
-
-	response := models.TokenResponse{
-		AccessToken:  td.AccessToken,
-		RefreshToken: td.RefreshToken,
-	}
-
-	return response, nil
+	return admin.ID, nil
 }
 
 func (s *AdminServiceImpl) GetAdminDesktop(adminID int) (models.AdminPanel, error) {

@@ -6,10 +6,11 @@ import (
 	"backend/internal/utils"
 	"backend/models"
 	"encoding/json"
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type AdminHandler struct {
@@ -68,7 +69,7 @@ func (a *AdminHandler) LogInAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := a.adminService.Login(logInData.Login, logInData.Password)
+	id, err := a.adminService.Login(logInData.Login, logInData.Password)
 	if err != nil {
 		slog.Warn(err.Error())
 
@@ -78,7 +79,18 @@ func (a *AdminHandler) LogInAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ResponseInJSON(w, http.StatusOK, response)
+	cookie := &http.Cookie{
+		Name:     "admin_id",
+		Value:    strconv.Itoa(id),
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		Expires:  time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	http.SetCookie(w, cookie)
+
+	utils.ResponseInJSON(w, http.StatusOK, id)
 }
 
 func (a *AdminHandler) GetAdmins(w http.ResponseWriter, r *http.Request) {
@@ -165,8 +177,6 @@ func (a *AdminHandler) GetAdminDesktop(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(adminID)
-
 	admin, err := a.adminService.GetAdminDesktop(adminID)
 	if err != nil {
 		slog.Warn(err.Error())
@@ -176,6 +186,7 @@ func (a *AdminHandler) GetAdminDesktop(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorInJSON(w, statusCode, err)
 		return
 	}
+
 	slog.Info("okok")
 	slog.Info(admin.LastName, admin.FirstName, admin.Table)
 

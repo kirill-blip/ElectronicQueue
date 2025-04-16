@@ -6,6 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func TokenAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -34,5 +35,24 @@ func TokenAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		ctx := context.WithValue(r.Context(), "admin_id", adminID)
 
 		next(w, r.WithContext(ctx))
+	}
+}
+
+func AdminAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("admin_id")
+		if err != nil {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		adminID, err := strconv.Atoi(cookie.Value)
+		if err != nil {
+			http.Error(w, "invalid admin_id", http.StatusBadRequest)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "admin_id", adminID)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
