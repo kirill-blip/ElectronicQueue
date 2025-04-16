@@ -5,7 +5,6 @@ import { AdminInfo } from "../models/Admin";
 import { useNavigate } from "react-router-dom";
 import { Alert, Button, Card, Container } from "react-bootstrap";
 import User from "../models/User";
-import { Cookies } from "react-cookie";
 
 async function refreshToken(): Promise<boolean> {
   try {
@@ -47,7 +46,7 @@ function AdminPanel() {
   });
 
   const [hasClient, setHasClient] = useState<boolean>(false);
-  const [noClient, setNoClient] = useState<boolean>(true);
+  const [noClient, setNoClient] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -113,13 +112,13 @@ function AdminPanel() {
                       className="primary me-2"
                       onClick={handleRejectClient}
                     >
-                      Не пришел
+                      Отклонить
                     </Button>
                     <Button
                       className="primary me-2"
                       onClick={handleAcceptClient}
                     >
-                      Пришел
+                      Принять
                     </Button>
                   </Card.Body>
                 </Card>

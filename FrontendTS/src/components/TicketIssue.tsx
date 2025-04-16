@@ -3,6 +3,7 @@ import User from "../models/User";
 import "../models/Entry";
 import "../styles/TicketIssue.css";
 import axios from "axios";
+import { Alert, Button, Card, Form } from "react-bootstrap";
 
 function TicketIssue() {
   const [user, setUser] = useState<User>({
@@ -11,7 +12,7 @@ function TicketIssue() {
     PhoneNumber: "",
   });
 
-  const handleSumbitButton = (e: React.FormEvent) => {
+  const handleSumbit = (e: React.FormEvent) => {
     e.preventDefault();
 
     axios({
@@ -22,9 +23,11 @@ function TicketIssue() {
         lastName: user.LastName,
         phoneNumber: user.PhoneNumber,
       },
-    })
+    });
 
-    console.log(`First Name: ${user.FirstName}\nLast Name: ${user.LastName}\nPhone Number: ${user.PhoneNumber}`);
+    console.log(
+      `First Name: ${user.FirstName}\nLast Name: ${user.LastName}\nPhone Number: ${user.PhoneNumber}`
+    );
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,37 +39,45 @@ function TicketIssue() {
   };
 
   return (
-    <div className="ticket-issue-container">
-      <form className="ticket-issue-form" onSubmit={handleSumbitButton}>
-        <h3 className="ticket-issue-header">Запись на прием</h3>
-        <p className="ticket-issue-label">Введите имя:</p>
-        <input
-          className="ticket-issue-input"
-          name="FirstName"
-          value={user.FirstName}
-          onChange={handleInputChange}
-        />
-        <p className="ticket-issue-label">Введите фамилию:</p>
-        
-        <input
-          className="ticket-issue-input"
-          name="LastName"
-          value={user.LastName}
-          onChange={handleInputChange}
-        />
-        
-        <p className="ticket-issue-label">Введите номер телефона:</p>
-        <input
-          className="ticket-issue-input"
-          name="PhoneNumber"
-          value={user.PhoneNumber}
-          onChange={handleInputChange}
-        />
-
-        <button type="submit" className="ticket-issue-button">
-          Записаться
-        </button>
-      </form>
+    <div
+      className="container d-flex justify-content-center align-items-center"
+      style={{ minHeight: "calc(95vh - 56px - 56px)" }}
+    >
+      <div className="col-12 col-md-8 col-lg-3">
+        <Card className="p-4 shadow">
+          <Card.Title as="h4" className="text-center">Получение талона</Card.Title>
+          <Form onSubmit={handleSumbit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Имя</Form.Label>
+              <Form.Control
+                type="text"
+                name="FirstName"
+                value={user.FirstName}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Фамилия</Form.Label>
+              <Form.Control
+                name="LastName"
+                value={user.LastName}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Номер телефона</Form.Label>
+              <Form.Control
+                name="PhoneNumber"
+                value={user.PhoneNumber}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Button type="submit" className="w-100">
+              Получить талон
+            </Button>
+          </Form>
+        </Card>
+      </div>
     </div>
   );
 }
