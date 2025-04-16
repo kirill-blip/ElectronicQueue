@@ -4,6 +4,9 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import TokenResponse from "../models/TokenResponse";
 import axios from "axios";
+import Form from "react-bootstrap/Form";
+import { Alert, Button, Card } from "react-bootstrap";
+import { Cookies } from "react-cookie";
 
 type AdminEntity = {
   Login: string;
@@ -23,20 +26,16 @@ function LoginForm() {
 
   const handleSumbit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     axios
       .post("http://localhost:8080/api/admin/login", {
         login: adminEntity.Login,
         password: adminEntity.Password,
       })
       .then(function (response) {
-        let tokenResponse: TokenResponse = {
-          AccessToken: response.data.access_token,
-          RefreshToken: response.data.refresh_token,
-        };
-
-        localStorage.setItem("access_token", tokenResponse.AccessToken);
-        localStorage.setItem("refresh_token", tokenResponse.RefreshToken);
+        const token = response.data.token;
+        const cookies = new Cookies();
+        cookies.set("admin_id", token, { path: "/" });
 
         navigate("/admin-panel");
 
@@ -65,38 +64,51 @@ function LoginForm() {
   };
 
   return (
-    <div className="login-form">
-      <form className="form" onSubmit={handleSumbit}>
-        <h3 className="form-header">Вход</h3>
-        <p className="label">Логин</p>
-        <input
-          name="Login"
-          className="input"
-          value={adminEntity.Login}
-          onChange={handleInputChange}
-        />
-        <p className="label">Пароль</p>
-        <div className="password-container">
-          <input
-            type={isPasswordVisible ? "text" : "password"}
-            id="password-input"
-            name="Password"
-            value={adminEntity.Password}
-            onChange={handleInputChange}
-            className="input"
-          />
-          <span className="visibility-icon" onClick={togglePasswordVisibility}>
-            {isPasswordVisible ? <MdVisibilityOff /> : <MdVisibility />}
-          </span>
-        </div>
-        <button type="submit" className="button">
-          Войти
-        </button>
-
-        {error ? (
-          <p className="error-message">Логин или пароль неверный</p>
-        ) : null}
-      </form>
+    <div
+      className="container d-flex justify-content-center align-items-center"
+      style={{ minHeight: "calc(95vh - 56px - 56px)" }}
+    >
+      <div className="col-12 col-md-8 col-lg-4">
+        <Card className="p-4 shadow">
+          <Form onSubmit={handleSumbit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Логин</Form.Label>
+              <Form.Control
+                type="text"
+                name="Login"
+                value={adminEntity.Login}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Пароль</Form.Label>
+              <div className="password-container">
+                <Form.Control
+                  type={isPasswordVisible ? "text" : "password"}
+                  id="password-input"
+                  name="Password"
+                  value={adminEntity.Password}
+                  onChange={handleInputChange}
+                />
+                <span
+                  className="visibility-icon"
+                  onClick={togglePasswordVisibility}
+                >
+                  {isPasswordVisible ? <MdVisibilityOff /> : <MdVisibility />}
+                </span>
+              </div>
+            </Form.Group>
+            <Button type="submit" className="w-100">
+              Войти
+            </Button>
+          </Form>
+          {error && (
+            <Alert variant="danger" className="mt-3">
+              Неверный логин или пароль
+            </Alert>
+          )}
+        </Card>
+      </div>
     </div>
   );
 }

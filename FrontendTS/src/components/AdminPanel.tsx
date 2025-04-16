@@ -3,6 +3,9 @@ import axios from "axios";
 import { useState } from "react";
 import { AdminInfo } from "../models/Admin";
 import { useNavigate } from "react-router-dom";
+import { Alert, Button, Card, Container } from "react-bootstrap";
+import User from "../models/User";
+import { Cookies } from "react-cookie";
 
 async function refreshToken(): Promise<boolean> {
   try {
@@ -37,14 +40,21 @@ function AdminPanel() {
     TableNumber: 0,
   });
 
+  const [client, setUser] = useState<User>({
+    FirstName: "Кирилл",
+    LastName: "Голубенко",
+    PhoneNumber: "+79879267442",
+  });
+
+  const [hasClient, setHasClient] = useState<boolean>(false);
+  const [noClient, setNoClient] = useState<boolean>(true);
+
   const navigate = useNavigate();
 
   const getAdmin = () => {
     axios
       .get("http://localhost:8080/api/admin/get", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+        withCredentials: true,
       })
       .then(function (response) {
         setAdmin({
@@ -68,21 +78,102 @@ function AdminPanel() {
 
   getAdmin();
 
+  const handleCallClient = () => {
+    if (!noClient) {
+      setHasClient(true);
+    } else {
+      setHasClient(false);
+    }
+  };
+
+  const handleAcceptClient = () => {
+    setHasClient(false);
+  };
+
+  const handleRejectClient = () => {
+    setHasClient(false);
+  };
+
   return (
     <div>
-      <header>
-        <h1>Панель администратора</h1>
-      </header>
-      <div>
-        <p>
-          Добро пожаловать,{" "}
-          <span>{`${admin.FirstName} ${admin.LastName}`}</span>! Ваш номер
-          стола: <span>{admin.TableNumber}</span>
-        </p>
-        <button>Вызвать клиента</button>
+      <Container>
+        <div className="row">
+          <div className="col-8 mt-2">
+            {hasClient ? (
+              <Container>
+                <Card>
+                  <Card.Header as="h5">Информация о клиенте</Card.Header>
+                  <Card.Body>
+                    <Card.Text className="mb-0">
+                      Имя клиента: {client.FirstName} {client.LastName}
+                    </Card.Text>
+                    <Card.Text>Номер телефона: {client.PhoneNumber}</Card.Text>
 
-        <button onClick={() => navigate("/login")}>Выйти</button>
-      </div>
+                    <Button
+                      className="primary me-2"
+                      onClick={handleRejectClient}
+                    >
+                      Не пришел
+                    </Button>
+                    <Button
+                      className="primary me-2"
+                      onClick={handleAcceptClient}
+                    >
+                      Пришел
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Container>
+            ) : (
+              <Container className="mt-2">
+                <Button className="primary me-2" onClick={handleCallClient}>
+                  Вызвать клиента
+                </Button>
+
+                {noClient && (
+                  <Alert variant="info" className="mt-2">
+                    Клиентов больше нет
+                  </Alert>
+                )}
+              </Container>
+            )}
+          </div>
+          <div className="col-4 mt-2">
+            <Container>
+              <Card>
+                <Card.Header as="h5">Информация о администраторе</Card.Header>
+                <Card.Body>
+                  <Card.Text as="h5">Имя: Кирилл Голубенко</Card.Text>
+                  <Card.Text as="h5">Стол номер: 2</Card.Text>
+                  <Button
+                    variant="danger"
+                    className="mt-2"
+                    onClick={() => navigate("/login")}
+                  >
+                    Выйти
+                  </Button>
+                </Card.Body>
+              </Card>
+
+              <Card className="mt-2">
+                <Card.Header as="h5">Функции</Card.Header>
+                <Card.Body>
+                  <Button style={{ width: "100%" }} variant="primary">
+                    Добавить администратора
+                  </Button>
+                  <Button
+                    style={{ width: "100%" }}
+                    variant="primary"
+                    className="mt-2"
+                  >
+                    Количество клиентов
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Container>
+          </div>
+        </div>
+      </Container>
     </div>
   );
 }

@@ -63,7 +63,7 @@
   right: 10px;
   cursor: pointer;
   z-index: 1;
-  bottom: 5px;
+  top: 5px;
 }
 
 .error-message {
