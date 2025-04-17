@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type UserHandler struct {
@@ -35,7 +37,7 @@ func (u *UserHandler) AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = u.userService.AddUser(user)
+	id, err := u.userService.AddUser(user)
 
 	if err != nil {
 		slog.Warn(err.Error())
@@ -49,6 +51,17 @@ func (u *UserHandler) AddUser(w http.ResponseWriter, r *http.Request) {
 	response := models.Response{
 		Message: "User has been added",
 	}
+
+	cookie := &http.Cookie{
+		Name:     "user",
+		Value:    strconv.Itoa(id),
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		Expires:  time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	http.SetCookie(w, cookie)
 
 	utils.ResponseInJSON(w, http.StatusOK, response)
 }

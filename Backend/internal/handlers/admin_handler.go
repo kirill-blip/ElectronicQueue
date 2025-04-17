@@ -189,6 +189,7 @@ func (a *AdminHandler) GetAdminDesktop(w http.ResponseWriter, r *http.Request) {
 
 	adminIDValue := r.Context().Value("admin_id")
 	adminID, ok := adminIDValue.(int)
+
 	if !ok {
 		slog.Info("admin_id not found or wrong type in context")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)

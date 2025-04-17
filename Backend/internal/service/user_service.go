@@ -6,7 +6,7 @@ import (
 )
 
 type UserService interface {
-	AddUser(user models.User) error
+	AddUser(user models.User) (int, error)
 	GetUser(id int) (models.User, error)
 }
 
@@ -18,14 +18,16 @@ func UserServiceImplInit(userRepo repository.UserRepository) UserService {
 	return &UserServiceImpl{userRepo}
 }
 
-func (u *UserServiceImpl) AddUser(user models.User) error {
+func (u *UserServiceImpl) AddUser(user models.User) (int, error) {
 	err := u.userRepository.AddUser(user)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	id := u.userRepository.GetUserIdByPhone(user.NumberPhone)
+
+	return id, nil
 }
 
 func (u *UserServiceImpl) GetUser(id int) (models.User, error) {

@@ -18,6 +18,8 @@ var (
 	LogInWrongPassword = errors.New("wrong password")
 	ServerError        = errors.New("server error")
 	InvalidAdminID     = errors.New("invalid admin id")
+	InvalidUserID      = errors.New("invalid user id")
+	ContainesData      = errors.New("Database containes value")
 )
 
 func FindErrorCode(err error) int {
@@ -25,7 +27,7 @@ func FindErrorCode(err error) int {
 		return 400
 	}
 
-	if err == InvalidData || err == InvalidToken || err == InvalidTokenId || err == AdminNotFound || err == LogInWrongPassword || err == LogInWrongLogin {
+	if err == ContainesData || err == InvalidData || err == InvalidToken || err == InvalidTokenId || err == AdminNotFound || err == LogInWrongPassword || err == LogInWrongLogin {
 		return 401
 	}
 

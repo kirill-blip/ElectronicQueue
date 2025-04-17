@@ -13,12 +13,15 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 
 	adminRepo := repository.AdminRepositoryInit(db)
 	userRepo := repository.UserRepositoryInit(db)
+	entryRepo := repository.EntryRepositoryInit(db)
 
 	adminService := service.AdminServiceInit(adminRepo)
 	userService := service.UserServiceImplInit(userRepo)
+	entryService := service.EntryServiceImplInit(entryRepo)
 
 	adminHandler := NewAdminHandler(adminService)
 	userHandler := NewUserHandler(userService)
+	entryHandler := NewEntryHandler(entryService)
 
 	mux.HandleFunc("POST /api/admin-registration", adminHandler.RegisterAdmin)
 	mux.HandleFunc("GET /api/admin", adminHandler.GetAdmins)
@@ -29,7 +32,11 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 
 	mux.HandleFunc("POST /api/user/add", userHandler.AddUser)
 	mux.HandleFunc("GET /api/user/get", userHandler.GetUser)
-	//mux.HandleFunc("GET /api/")
+
+	mux.HandleFunc("POST /api/entry/generate", middleware.UserMiddleware(entryHandler.GenerateEntry))
+	mux.HandleFunc("GET /api/entry/get", middleware.UserMiddleware(entryHandler.GetEntry))
+	mux.HandleFunc("GET /api/entry/get-last-entry", entryHandler.GetLastEntryNumber)
+	// mux.HandleFunc("GET /api/")
 
 	return mux, nil
 }

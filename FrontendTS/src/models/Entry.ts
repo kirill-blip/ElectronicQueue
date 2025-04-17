@@ -1,12 +1,13 @@
-import { Admin } from "./Admin";
-import User from "./User";
+class Entry {
+    ticketNumber: number;
+    user_id: number;
+    admin_id: number;
 
-type Entry = {
-    TicketNumber: number;
-    User: User;
-    Admin: Admin;
-    Date: Date;
-    Status: EntryStatus;
+    constructor() {
+        this.ticketNumber = 0;
+        this.user_id = 0;
+        this.admin_id = 0;
+    }
 }
 
 enum EntryStatus {
