@@ -45,11 +45,11 @@ const fetchAdminInfo = async () => {
     return response.json();
 }
 
-export const useGetTicketInfo = () => {
+export const useGetTicketInfo = (refreshKey: number) => {
     const [ticketData, setTicketData] = useState<Entry>({
-        user_id: 0,
-        admin_id: 0,
-        ticketNumber: 0,
+        UserId: 0,
+        AdminId: 0,
+        TicketNumber: 0,
     })
 
     const [user, setUser] = useState<User>({
@@ -70,9 +70,9 @@ export const useGetTicketInfo = () => {
                 const ticketResponse = await fetchTicketData();
 
                 setTicketData({
-                    user_id: ticketResponse.user_id,
-                    admin_id: ticketResponse.admin_id,
-                    ticketNumber: ticketResponse.ticket_number,
+                    UserId: ticketResponse.user_id,
+                    AdminId: ticketResponse.admin_id,
+                    TicketNumber: ticketResponse.ticket_number,
                 });
 
                 const userResponse = await fetchUserInfo();
@@ -96,7 +96,7 @@ export const useGetTicketInfo = () => {
         }
 
         fetchTicketInfo();
-    }, []);
+    }, [refreshKey]);
 
     return { ticketData, user, admin };
 }

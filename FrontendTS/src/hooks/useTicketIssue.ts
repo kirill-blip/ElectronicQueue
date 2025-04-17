@@ -27,7 +27,6 @@ const generateTicket = async () => {
 export const useTicketIssue = () => {
     return async (
         user: User,
-        setTicketData: React.Dispatch<React.SetStateAction<Entry>>,
         setErrorMessage: React.Dispatch<React.SetStateAction<string>>
     ) => {
         try {
@@ -37,14 +36,7 @@ export const useTicketIssue = () => {
                 const ticketResponse = await generateTicket();
 
                 if (ticketResponse.ok) {
-                    const entryData = await ticketResponse.json();
-                    console.log(entryData);
-
-                    setTicketData({
-                        user_id: entryData.user_id,
-                        admin_id: entryData.admin_id,
-                        ticketNumber: entryData.ticket_number,
-                    });
+                    console.log("Талон успешно выдан.");
                 }
             } else {
                 const errorData = await response.json();

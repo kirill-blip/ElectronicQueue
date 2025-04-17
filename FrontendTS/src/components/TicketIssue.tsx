@@ -3,16 +3,17 @@ import User from "../models/User";
 import "../models/Entry";
 import "../styles/TicketIssue.css";
 import { Alert, Button, Card, Form } from "react-bootstrap";
-import Entry from "../models/Entry";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { useGetTicketInfo } from "../hooks/useGetTicketInfo";
 import { useTicketIssue } from "../hooks/useTicketIssue";
 
 function TicketIssue() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
   function convertTicketNumber(ticketNumber: number): string {
     const ticketString = ticketNumber.toString().padStart(3, "0");
-    console.log(ticketString);
+    console.log(ticketNumber);
     return ticketString;
   }
 
@@ -22,14 +23,12 @@ function TicketIssue() {
     PhoneNumber: "",
   });
 
-  const [ticketData, setTicketData] = useState<Entry>({
-    user_id: 0,
-    admin_id: 0,
-    ticketNumber: 0,
-  });
+  const {
+    ticketData: fetchedTicketData,
+    user: fetchedUser,
+    admin: fetchedAdmin,
+  } = useGetTicketInfo(refreshKey);
 
-  const { ticketData: fetchedTicketData, user: fetchedUser, admin: fetchedAdmin } =
-    useGetTicketInfo();
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const issueTicket = useTicketIssue();
@@ -38,7 +37,8 @@ function TicketIssue() {
     e.preventDefault();
 
     try {
-      await issueTicket(user, setTicketData, setErrorMessage);
+      await issueTicket(user, setErrorMessage);
+      setRefreshKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error while issuing ticket:", error);
       setErrorMessage("Произошла ошибка при получении талона.");
@@ -67,7 +67,7 @@ function TicketIssue() {
       className="container d-flex justify-content-center align-items-center"
       style={{ minHeight: "calc(95vh - 56px - 56px)" }}
     >
-      {fetchedTicketData.ticketNumber === 0 && ticketData.ticketNumber === 0 ? (
+      {fetchedTicketData.TicketNumber === 0 ? (
         <div className="col-12 col-md-8 col-lg-4">
           <Card className="p-4 shadow">
             <Card.Title as="h4" className="text-center">
@@ -121,7 +121,7 @@ function TicketIssue() {
             <Card.Title as="h4" className="text-center">
               <strong>
                 Талон №
-                {convertTicketNumber(fetchedTicketData.ticketNumber) || convertTicketNumber(ticketData.ticketNumber)}
+                {convertTicketNumber(fetchedTicketData.TicketNumber)}
               </strong>
             </Card.Title>
             <Card.Body>
@@ -136,11 +136,7 @@ function TicketIssue() {
               {fetchedAdmin.TableNumber !== 0 ? (
                 <Alert variant="info">
                   Пожалуйста, подойдите к{" "}
-                  <strong>
-                    столику{" "}
-                    {fetchedAdmin.TableNumber}
-                  </strong>
-                  .
+                  <strong>столику {fetchedAdmin.TableNumber}</strong>.
                 </Alert>
               ) : null}
             </Card.Body>
