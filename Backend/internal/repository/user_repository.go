@@ -22,7 +22,7 @@ func UserRepositoryInit(db *sql.DB) UserRepository {
 
 func (u *UserRepositoryImpl) AddUser(user models.User) error {
 	_, err := u.db.Exec(`
-		INSERT INTO "user" (first_name, last_name, phone)
+		INSERT INTO "user" (first_name, last_name, number_phone)
 		VALUES ($1, $2, $3)
 	`, user.FirstName, user.LastName, user.NumberPhone)
 
@@ -35,7 +35,7 @@ func (u *UserRepositoryImpl) AddUser(user models.User) error {
 
 func (u *UserRepositoryImpl) GetUser(id int) (models.User, error) {
 	userRow, err := u.db.Query(`
-		SELECT first_name, last_name, phone
+		SELECT first_name, last_name, number_phone
 		FROM "user"
 		WHERE "user".id = $1
 	`, id)

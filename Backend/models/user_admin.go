@@ -15,6 +15,10 @@ type User struct {
 	LastName    string `json:"last_name"`
 }
 
+type UserId struct {
+	Id int `json:"id"`
+}
+
 type LogIn struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
