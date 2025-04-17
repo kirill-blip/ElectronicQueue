@@ -1,12 +1,7 @@
-import { Admin } from "./Admin";
-import User from "./User";
-
-type Entry = {
+interface Entry {
     TicketNumber: number;
-    User: User;
-    Admin: Admin;
-    Date: Date;
-    Status: EntryStatus;
+    UserId: number;
+    AdminId: number;
 }
 
 enum EntryStatus {

@@ -9,7 +9,8 @@ CREATE TABLE "user" (
                          chat_id VARCHAR(255),
                          first_name VARCHAR(100),
                          last_name VARCHAR(100),
-                         number_phone VARCHAR(20)
+                         number_phone VARCHAR(20),
+                         UNIQUE (number_phone)
 );
 
 CREATE TABLE "admin" (
@@ -24,7 +25,7 @@ CREATE TABLE "admin" (
 
 CREATE TABLE entry (
                          id SERIAL PRIMARY KEY,
-                         ticket_number VARCHAR(50),
+                         ticket_number INTEGER NOT NULL,
                          user_id INTEGER REFERENCES "user"(id),
                          admin_id INTEGER REFERENCES "admin"(id),
                          date TIMESTAMP,

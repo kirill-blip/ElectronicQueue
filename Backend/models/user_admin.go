@@ -1,5 +1,10 @@
 package models
 
+type EntryAdminId struct {
+	EntryId int `json:entry_id`
+	AdminId int `json:admin_id`
+}
+
 type Admin struct {
 	ID          int    `json:"id,omitempty"`
 	Login       string `json:"login"`
@@ -13,6 +18,10 @@ type User struct {
 	NumberPhone string `json:"number_phone"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
+}
+
+type UserId struct {
+	Id int `json:"id"`
 }
 
 type LogIn struct {
