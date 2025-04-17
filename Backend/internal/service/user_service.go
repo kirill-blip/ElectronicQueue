@@ -1,7 +1,9 @@
 package service
 
 import (
+	"backend/internal/apperrors"
 	"backend/internal/repository"
+	"backend/internal/utils"
 	"backend/models"
 )
 
@@ -19,6 +21,18 @@ func UserServiceImplInit(userRepo repository.UserRepository) UserService {
 }
 
 func (u *UserServiceImpl) AddUser(user models.User) (int, error) {
+	if !utils.LastFirstNameValid(user.FirstName) {
+		return 0, apperrors.InvalidFirstName
+	}
+
+	if !utils.LastFirstNameValid(user.LastName) {
+		return 0, apperrors.InvalidLastName
+	}
+
+	if !utils.ValidateKazakhstanPhone(user.NumberPhone) {
+		return 0, apperrors.InvalidPhone
+	}
+
 	err := u.userRepository.AddUser(user)
 
 	if err != nil {

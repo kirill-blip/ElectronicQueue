@@ -1,11 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import User from "../models/User";
 import "../models/Entry";
 import "../styles/TicketIssue.css";
-import { Button, Card, Form } from "react-bootstrap";
+import { Alert, Button, Card, Form } from "react-bootstrap";
 import Entry from "../models/Entry";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
+import { useGetTicketInfo } from "../hooks/useGetTicketInfo";
+import { useTicketIssue } from "../hooks/useTicketIssue";
 
 function TicketIssue() {
+  function convertTicketNumber(ticketNumber: number): string {
+    const ticketString = ticketNumber.toString().padStart(3, "0");
+    console.log(ticketString);
+    return ticketString;
+  }
+
   const [user, setUser] = useState<User>({
     FirstName: "",
     LastName: "",
@@ -18,48 +28,20 @@ function TicketIssue() {
     ticketNumber: 0,
   });
 
+  const { ticketData: fetchedTicketData, user: fetchedUser, admin: fetchedAdmin } =
+    useGetTicketInfo();
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const issueTicket = useTicketIssue();
+
   const handleSumbit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      let response = await fetch("http://localhost:8080/api/user/add", {
-        method: "POST",
-        body: JSON.stringify({
-          number_phone: user.PhoneNumber,
-          first_name: user.FirstName,
-          last_name: user.LastName,
-        }),
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const ticketResponse = await fetch(
-          "http://localhost:8080/api/entry/generate",
-          {
-            method: "POST",
-            credentials: "include",
-          }
-        );
-
-        if (ticketResponse.ok) {
-          const entryData = await ticketResponse.json();
-          console.log(entryData);
-
-          setTicketData({
-            user_id: entryData.user_id,
-            admin_id: entryData.admin_id,
-            ticketNumber: entryData.ticket_number,
-          });
-
-          console.log(ticketData);
-        }
-
-        console.log("Пользователь добавлен в базу данных");
-      } else {
-        throw new Error("Invalid value");
-      }
+      await issueTicket(user, setTicketData, setErrorMessage);
     } catch (error) {
-      console.log(error);
+      console.error("Error while issuing ticket:", error);
+      setErrorMessage("Произошла ошибка при получении талона.");
     }
   };
 
@@ -69,41 +51,24 @@ function TicketIssue() {
       ...prevUser,
       [name]: value,
     }));
+
+    setErrorMessage("");
   };
 
-  const getTicketInfo = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/entry/get", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setTicketData({
-          user_id: data.user_id,
-          admin_id: data.admin_id,
-          ticketNumber: data.ticket_number,
-        });
-      } else {
-        throw new Error("Failed to fetch ticket info");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const handlePhoneChange = (value: string) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      PhoneNumber: value,
+    }));
   };
-
-  useEffect(() => {
-    getTicketInfo();
-  }, []);
 
   return (
     <div
       className="container d-flex justify-content-center align-items-center"
       style={{ minHeight: "calc(95vh - 56px - 56px)" }}
     >
-      <div className="col-12 col-md-8 col-lg-3">
-        {ticketData.ticketNumber === 0 ? (
+      {fetchedTicketData.ticketNumber === 0 && ticketData.ticketNumber === 0 ? (
+        <div className="col-12 col-md-8 col-lg-4">
           <Card className="p-4 shadow">
             <Card.Title as="h4" className="text-center">
               Получение талона
@@ -116,6 +81,7 @@ function TicketIssue() {
                   name="FirstName"
                   value={user.FirstName}
                   onChange={handleInputChange}
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -124,30 +90,63 @@ function TicketIssue() {
                   name="LastName"
                   value={user.LastName}
                   onChange={handleInputChange}
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Номер телефона</Form.Label>
-                <Form.Control
-                  type="tel"
-                  name="PhoneNumber"
+                <PhoneInput
+                  inputStyle={{ width: "100%" }}
+                  defaultCountry="kz"
                   value={user.PhoneNumber}
-                  onChange={handleInputChange}
+                  onChange={handlePhoneChange}
+                  required
                 />
               </Form.Group>
               <Button type="submit" className="w-100">
                 Получить талон
               </Button>
+
+              {errorMessage !== "" && (
+                <Alert variant="danger" className="mt-3">
+                  {errorMessage}
+                </Alert>
+              )}
             </Form>
           </Card>
-        ) : (
+        </div>
+      ) : (
+        <div className="col-12 col-md-8 col-lg-5">
           <Card className="p-4 shadow">
             <Card.Title as="h4" className="text-center">
-              Талон {ticketData.ticketNumber}
+              <strong>
+                Талон №
+                {convertTicketNumber(fetchedTicketData.ticketNumber) || convertTicketNumber(ticketData.ticketNumber)}
+              </strong>
             </Card.Title>
+            <Card.Body>
+              <Card.Text>
+                <strong>Имя:</strong> {fetchedUser.FirstName || user.FirstName}{" "}
+                {fetchedUser.LastName || user.LastName}
+              </Card.Text>
+              <Card.Text>
+                <strong>Номер телефона:</strong>{" "}
+                {fetchedUser.PhoneNumber || user.PhoneNumber}
+              </Card.Text>
+              {fetchedAdmin.TableNumber !== 0 ? (
+                <Alert variant="info">
+                  Пожалуйста, подойдите к{" "}
+                  <strong>
+                    столику{" "}
+                    {fetchedAdmin.TableNumber}
+                  </strong>
+                  .
+                </Alert>
+              ) : null}
+            </Card.Body>
           </Card>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

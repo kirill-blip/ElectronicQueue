@@ -1,5 +1,10 @@
 package models
 
+type EntryAdminId struct {
+	EntryId int `json:entry_id`
+	AdminId int `json:admin_id`
+}
+
 type Admin struct {
 	ID          int    `json:"id,omitempty"`
 	Login       string `json:"login"`

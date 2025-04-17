@@ -31,12 +31,12 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 	mux.HandleFunc("GET /api/admin/get", middleware.AdminAuthMiddleware(adminHandler.GetAdminDesktop))
 
 	mux.HandleFunc("POST /api/user/add", userHandler.AddUser)
-	mux.HandleFunc("GET /api/user/get", userHandler.GetUser)
+	mux.HandleFunc("GET /api/user/get", middleware.UserMiddleware(userHandler.GetUser))
 
 	mux.HandleFunc("POST /api/entry/generate", middleware.UserMiddleware(entryHandler.GenerateEntry))
 	mux.HandleFunc("GET /api/entry/get", middleware.UserMiddleware(entryHandler.GetEntry))
 	mux.HandleFunc("GET /api/entry/get-last-entry", entryHandler.GetLastEntryNumber)
-	// mux.HandleFunc("GET /api/")
+	mux.HandleFunc("POST /api/entry/get-admin", adminHandler.GetAdmin)
 
 	return mux, nil
 }

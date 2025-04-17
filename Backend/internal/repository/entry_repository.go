@@ -11,7 +11,7 @@ import (
 type EntryRepository interface {
 	AddEntry(models.Entry) (models.Entry, error)
 	GetEntry(int) (models.Entry, error)
-	GetLastEntry() (models.Entry, error)
+	GetLastEntry() (int, error)
 }
 
 type EntryRepositoryImpl struct {
@@ -22,13 +22,12 @@ func EntryRepositoryInit(db *sql.DB) EntryRepository {
 	return &EntryRepositoryImpl{db: db}
 }
 
-func (e *EntryRepositoryImpl) GetEntry(int) (models.Entry, error) {
+func (e *EntryRepositoryImpl) GetEntry(id int) (models.Entry, error) {
 	entryRow, err := e.db.Query(`
         SELECT *
         FROM "entry"
-        ORDER BY id DESC
-        LIMIT 1
-    `)
+        WHERE "id" = $1
+    `, id)
 
 	if err != nil {
 		return models.Entry{}, err
@@ -96,25 +95,29 @@ func (e *EntryRepositoryImpl) AddEntry(entry models.Entry) (models.Entry, error)
 	return entry, nil
 }
 
-func (e *EntryRepositoryImpl) GetLastEntry() (models.Entry, error) {
-	entryRow, err := e.db.Query(`
-		SELECT *
-		FROM "entry"
-		LIMIT 1
-	`)
+func (e *EntryRepositoryImpl) GetLastEntry() (int, error) {
+	query := `
+        SELECT id, ticket_number, user_id, admin_id, date, status
+        FROM entry
+        WHERE "date"::DATE = CURRENT_DATE
+        ORDER BY ticket_number DESC
+        LIMIT 1;
+    `
 
+	entryRow, err := e.db.Query(query)
 	if err != nil {
-		return models.Entry{}, err
+		slog.Warn("Failed to execute query: " + err.Error())
+		return 0, apperrors.ProblemWithDB
 	}
+	defer entryRow.Close()
 
 	var entry models.Entry
-
-	for entryRow.Next() {
+	if entryRow.Next() {
 		var adminId sql.NullInt64
 
 		if err := entryRow.Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &adminId, &entry.Date, &entry.Status); err != nil {
-			slog.Warn(err.Error())
-			return models.Entry{}, apperrors.ProblemWithDB
+			slog.Warn("Failed to scan row: " + err.Error())
+			return 0, apperrors.ProblemWithDB
 		}
 
 		if adminId.Valid {
@@ -122,7 +125,10 @@ func (e *EntryRepositoryImpl) GetLastEntry() (models.Entry, error) {
 		} else {
 			entry.AdminId = 0
 		}
+	} else {
+		slog.Info("No entries found for the current date")
+		return 0, nil
 	}
 
-	return entry, nil
+	return entry.TicketNumber, nil
 }

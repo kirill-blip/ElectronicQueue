@@ -8,8 +8,16 @@ import (
 
 type EntryService interface {
 	GenerateEntry(int) (models.Entry, error)
-	GetLastEntry() (models.Entry, error)
+	GetLastEntry() (int, error)
 	GetEntry(int) (models.Entry, error)
+}
+
+type EntryServiceImpl struct {
+	entryRepository repository.EntryRepository
+}
+
+func EntryServiceImplInit(entryRepo repository.EntryRepository) EntryService {
+	return &EntryServiceImpl{entryRepo}
 }
 
 func (e *EntryServiceImpl) GetEntry(userId int) (models.Entry, error) {
@@ -22,14 +30,6 @@ func (e *EntryServiceImpl) GetEntry(userId int) (models.Entry, error) {
 	return entry, nil
 }
 
-type EntryServiceImpl struct {
-	entryRepository repository.EntryRepository
-}
-
-func EntryServiceImplInit(entryRepo repository.EntryRepository) EntryService {
-	return &EntryServiceImpl{entryRepo}
-}
-
 func (e *EntryServiceImpl) GenerateEntry(userId int) (models.Entry, error) {
 	lastTicketNumber, err := e.GetLastEntry()
 
@@ -38,7 +38,7 @@ func (e *EntryServiceImpl) GenerateEntry(userId int) (models.Entry, error) {
 	}
 
 	entry := models.Entry{
-		TicketNumber: lastTicketNumber.TicketNumber + 1,
+		TicketNumber: lastTicketNumber + 1,
 		UserId:       userId,
 		AdminId:      0,
 		Date:         time.Now(),
@@ -54,7 +54,7 @@ func (e *EntryServiceImpl) GenerateEntry(userId int) (models.Entry, error) {
 	return entry, nil
 }
 
-func (e *EntryServiceImpl) GetLastEntry() (models.Entry, error) {
+func (e *EntryServiceImpl) GetLastEntry() (int, error) {
 	entry, err := e.entryRepository.GetLastEntry()
 
 	if err != nil {

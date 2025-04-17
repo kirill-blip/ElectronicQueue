@@ -69,20 +69,15 @@ func (u *UserHandler) AddUser(w http.ResponseWriter, r *http.Request) {
 func (u *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var userId models.UserId
+	userIdValue := r.Context().Value("user")
+	userId, ok := userIdValue.(int)
 
-	err := json.NewDecoder(r.Body).Decode(&userId)
-
-	if err != nil {
-		slog.Warn(err.Error())
-
-		statusCode := apperrors.FindErrorCode(err)
-
-		utils.ErrorInJSON(w, statusCode, err)
+	if !ok {
+		http.Error(w, "UserId undefined", http.StatusNotFound)
 		return
 	}
 
-	user, err := u.userService.GetUser(userId.Id)
+	user, err := u.userService.GetUser(userId)
 
 	if err != nil {
 		slog.Warn(err.Error())

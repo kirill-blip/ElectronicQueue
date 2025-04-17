@@ -22,6 +22,28 @@ func NewAdminHandler(adminService service.AdminService) *AdminHandler {
 	return &AdminHandler{adminService}
 }
 
+func (a *AdminHandler) GetAdmin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var id models.UserId
+
+	err := json.NewDecoder(r.Body).Decode(&id)
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	admin, err := a.adminService.GetAdmin(id.Id)
+
+	slog.Info(admin.FirstName)
+
+	utils.ResponseInJSON(w, http.StatusCreated, admin)
+}
+
 func (a *AdminHandler) RegisterAdmin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

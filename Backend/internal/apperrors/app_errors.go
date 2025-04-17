@@ -20,10 +20,11 @@ var (
 	InvalidAdminID     = errors.New("invalid admin id")
 	InvalidUserID      = errors.New("invalid user id")
 	ContainesData      = errors.New("Database containes value")
+	InvalidPhone       = errors.New("invalid phone")
 )
 
 func FindErrorCode(err error) int {
-	if err == InvalidPassword || err == InvalidLastName || err == InvalidFirstName || err == InvalidLogin || err == LenLogin {
+	if err == InvalidPassword || err == InvalidLastName || err == InvalidFirstName || err == InvalidLogin || err == LenLogin || err == InvalidPhone {
 		return 400
 	}
 

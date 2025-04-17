@@ -10,6 +10,7 @@ import (
 type AdminService interface {
 	RegisterAdmin(admin models.Admin) error
 	GetAdmins() ([]models.Admin, error)
+	GetAdmin(int) (models.AdminPanel, error)
 	Login(login, password string) (int, error)
 	GetAdminDesktop(adminID int) (models.AdminPanel, error)
 }
@@ -20,6 +21,16 @@ type AdminServiceImpl struct {
 
 func AdminServiceInit(adminRepo repository.AdminRepository) AdminService {
 	return &AdminServiceImpl{adminRepo}
+}
+
+func (s *AdminServiceImpl) GetAdmin(id int) (models.AdminPanel, error) {
+	user, err := s.adminRepo.GetAdminForPanel(id)
+
+	if err != nil {
+		return models.AdminPanel{}, err
+	}
+
+	return user, nil
 }
 
 func (s *AdminServiceImpl) RegisterAdmin(admin models.Admin) error {
