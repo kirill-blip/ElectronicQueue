@@ -9,14 +9,19 @@ import LoginForm from "./components/LoginForm";
 import AdminPanel from "./components/AdminPanel";
 import { useEffect, useState } from "react";
 import Queue from "./components/Queue";
+import { NavbarProps } from "react-bootstrap";
 
 function App() {
   const [headerTitle, setHeaderTitle] = useState("Электронная очередь");
+  const [footerType, setFooterType] = useState<NavbarProps>();
 
   return (
     <>
       <BrowserRouter basename="/">
-        <HeaderManager setHeaderTitle={setHeaderTitle} />
+        <HeaderFooterManager
+          setHeaderTitle={setHeaderTitle}
+          setFooterType={setFooterType}
+        />
         <Header title={headerTitle} />
         <Routes>
           <Route path="/" element={<Main />} />
@@ -26,16 +31,18 @@ function App() {
           <Route path="/queue" element={<Queue />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <Footer />
+        <Footer footerType={footerType} />
       </BrowserRouter>
     </>
   );
 }
 
-function HeaderManager({
+function HeaderFooterManager({
   setHeaderTitle,
+  setFooterType,
 }: {
   setHeaderTitle: (title: string) => void;
+  setFooterType: (footerType: NavbarProps) => void;
 }) {
   const location = useLocation();
 
@@ -47,6 +54,12 @@ function HeaderManager({
       setHeaderTitle("Панель администратора");
     } else {
       setHeaderTitle("Электронная очередь");
+    }
+
+    if (location.pathname === "/") {
+      setFooterType({ fixed: undefined });
+    } else {
+      setFooterType({ fixed: "bottom" });
     }
   }, [location.pathname]);
 

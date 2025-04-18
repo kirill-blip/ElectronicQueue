@@ -1,10 +1,16 @@
-import { Container, Navbar } from "react-bootstrap";
+import { Container, Navbar, NavbarProps } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-function Footer() {
+interface FooterProps {
+  footerType?: NavbarProps;
+}
+
+function Footer({footerType}: FooterProps) {
   return (
     <footer className="mt-auto">
+      
       <Navbar
+        fixed={footerType?.fixed}
         className="bg-body-secondary d-flex justify-content-center align-items-center border-top text-center"
       >
         <Container className="d-flex flex-column align-items-center">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import User from "../models/User";
 import "../models/Entry";
 import "../styles/TicketIssue.css";
@@ -7,9 +7,11 @@ import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { useGetTicketInfo } from "../hooks/useGetTicketInfo";
 import { useTicketIssue } from "../hooks/useTicketIssue";
+import Loading from "./Loading";
 
 function TicketIssue() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   function convertTicketNumber(ticketNumber: number): string {
     const ticketString = ticketNumber.toString().padStart(3, "0");
@@ -28,6 +30,12 @@ function TicketIssue() {
     user: fetchedUser,
     admin: fetchedAdmin,
   } = useGetTicketInfo(refreshKey);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timeout = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timeout);
+  }, [refreshKey]);
 
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -60,7 +68,11 @@ function TicketIssue() {
       ...prevUser,
       PhoneNumber: value,
     }));
-  };
+  }
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div
@@ -117,11 +129,10 @@ function TicketIssue() {
         </div>
       ) : (
         <div className="col-12 col-md-8 col-lg-5">
-          <Card className="p-4 shadow">
+          <Card className="p-3 shadow">
             <Card.Title as="h4" className="text-center">
               <strong>
-                Талон №
-                {convertTicketNumber(fetchedTicketData.TicketNumber)}
+                Талон №{convertTicketNumber(fetchedTicketData.TicketNumber)}
               </strong>
             </Card.Title>
             <Card.Body>
@@ -133,12 +144,18 @@ function TicketIssue() {
                 <strong>Номер телефона:</strong>{" "}
                 {fetchedUser.PhoneNumber || user.PhoneNumber}
               </Card.Text>
+
               {fetchedAdmin.TableNumber !== 0 ? (
-                <Alert variant="info">
+                <Alert variant="info" className="mt-0">
                   Пожалуйста, подойдите к{" "}
                   <strong>столику {fetchedAdmin.TableNumber}</strong>.
                 </Alert>
-              ) : null}
+              ) : (
+                <div>
+                  <Button variant="danger">Удалить талон</Button>
+                  <Button variant="warning ms-2">Обновить талон</Button>
+                </div>
+              )}
             </Card.Body>
           </Card>
         </div>

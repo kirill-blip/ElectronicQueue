@@ -2,8 +2,10 @@ import "../styles/AdminPanel.css";
 import { useEffect, useState } from "react";
 import { AdminInfo } from "../models/Admin";
 import { useNavigate } from "react-router-dom";
-import { Alert, Button, Card, Container } from "react-bootstrap";
+import { Alert, Button, Card, Container, Spinner } from "react-bootstrap";
 import User from "../models/User";
+import Unauthorized from "./Unauthorized";
+import Loading from "./Loading";
 
 async function getAdmin(): Promise<AdminInfo> {
   let admin: AdminInfo = {
@@ -30,6 +32,8 @@ async function getAdmin(): Promise<AdminInfo> {
       };
     } else if (response.status === 401) {
       throw new Error("Unauthorized");
+    } else {
+      throw new Error("Failed to fetch admin data");
     }
   } catch (error) {}
 
@@ -37,7 +41,9 @@ async function getAdmin(): Promise<AdminInfo> {
 }
 
 function AdminPanel() {
+  const [isAuth, setIsAuth] = useState<boolean>(false);
   const [admin, setAdmin] = useState<AdminInfo>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [client, setUser] = useState<User>({
     FirstName: "Кирилл",
@@ -66,115 +72,144 @@ function AdminPanel() {
     setHasClient(false);
   };
 
-  const handleLogOut =async () => {
+  const handleLogOut = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/admin/logout", {
         method: "POST",
         credentials: "include",
       });
-      
+
       if (response.ok) {
-        const json = await response.json();
-        console.log(json);
         navigate("/login");
       } else if (response.status === 401) {
         throw new Error("Unauthorized");
       }
     } catch (error) {}
-  }
+  };
 
   useEffect(() => {
     if (!admin) {
-      getAdmin().then((result) => {
-        setAdmin(result);
-      });
+      getAdmin()
+        .then((result) => {
+          setAdmin(result);
+
+          if (result.FirstName === "") {
+            setIsAuth(false);
+          } else {
+            setIsAuth(true);
+          }
+        })
+        .catch(() => {
+          setIsAuth(false);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1500);
+        });
     }
   }, []);
 
+  if (isLoading) {
+    return (
+      <Loading />
+    );
+  }
+
   return (
     <div>
-      <Container>
-        <div className="row">
-          <div className="col-8 mt-2">
-            {hasClient ? (
+      {!isAuth ? (
+        <Unauthorized
+          handler={() => {
+            navigate("/login");
+          }}
+        />
+      ) : (
+        <Container>
+          <div className="row">
+            <div className="col-8 mt-2">
+              {hasClient ? (
+                <Container>
+                  <Card>
+                    <Card.Header as="h5">Информация о клиенте</Card.Header>
+                    <Card.Body>
+                      <Card.Text className="mb-0">
+                        Имя клиента: {client.FirstName} {client.LastName}
+                      </Card.Text>
+                      <Card.Text>
+                        Номер телефона: {client.PhoneNumber}
+                      </Card.Text>
+
+                      <Button
+                        className="primary me-2"
+                        onClick={handleRejectClient}
+                      >
+                        Отклонить
+                      </Button>
+                      <Button
+                        className="primary me-2"
+                        onClick={handleAcceptClient}
+                      >
+                        Принять
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Container>
+              ) : (
+                <Container className="mt-2">
+                  <Button className="primary me-2" onClick={handleCallClient}>
+                    Вызвать клиента
+                  </Button>
+
+                  {noClient && (
+                    <Alert variant="info" className="mt-2">
+                      Клиентов больше нет
+                    </Alert>
+                  )}
+                </Container>
+              )}
+            </div>
+            <div className="col-4 mt-2">
               <Container>
                 <Card>
-                  <Card.Header as="h5">Информация о клиенте</Card.Header>
+                  <Card.Header as="h5">Информация о администраторе</Card.Header>
                   <Card.Body>
-                    <Card.Text className="mb-0">
-                      Имя клиента: {client.FirstName} {client.LastName}
+                    <Card.Text as="h5">
+                      Имя: {admin?.FirstName} {admin?.LastName}
                     </Card.Text>
-                    <Card.Text>Номер телефона: {client.PhoneNumber}</Card.Text>
-
+                    <Card.Text as="h5">
+                      Стол номер: {admin?.TableNumber}
+                    </Card.Text>
                     <Button
-                      className="primary me-2"
-                      onClick={handleRejectClient}
+                      variant="danger"
+                      className="mt-2"
+                      onClick={handleLogOut}
                     >
-                      Отклонить
+                      Выйти
+                    </Button>
+                  </Card.Body>
+                </Card>
+
+                <Card className="mt-2">
+                  <Card.Header as="h5">Функции</Card.Header>
+                  <Card.Body>
+                    <Button style={{ width: "100%" }} variant="primary">
+                      Добавить администратора
                     </Button>
                     <Button
-                      className="primary me-2"
-                      onClick={handleAcceptClient}
+                      style={{ width: "100%" }}
+                      variant="primary"
+                      className="mt-2"
                     >
-                      Принять
+                      Количество клиентов
                     </Button>
                   </Card.Body>
                 </Card>
               </Container>
-            ) : (
-              <Container className="mt-2">
-                <Button className="primary me-2" onClick={handleCallClient}>
-                  Вызвать клиента
-                </Button>
-
-                {noClient && (
-                  <Alert variant="info" className="mt-2">
-                    Клиентов больше нет
-                  </Alert>
-                )}
-              </Container>
-            )}
+            </div>
           </div>
-          <div className="col-4 mt-2">
-            <Container>
-              <Card>
-                <Card.Header as="h5">Информация о администраторе</Card.Header>
-                <Card.Body>
-                  <Card.Text as="h5">
-                    Имя: {admin?.FirstName} {admin?.LastName}
-                  </Card.Text>
-                  <Card.Text as="h5">
-                    Стол номер: {admin?.TableNumber}
-                  </Card.Text>
-                  <Button
-                    variant="danger"
-                    className="mt-2"
-                    onClick={handleLogOut}
-                  >
-                    Выйти
-                  </Button>
-                </Card.Body>
-              </Card>
-
-              <Card className="mt-2">
-                <Card.Header as="h5">Функции</Card.Header>
-                <Card.Body>
-                  <Button style={{ width: "100%" }} variant="primary">
-                    Добавить администратора
-                  </Button>
-                  <Button
-                    style={{ width: "100%" }}
-                    variant="primary"
-                    className="mt-2"
-                  >
-                    Количество клиентов
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Container>
-          </div>
-        </div>
-      </Container>
+        </Container>
+      )}
     </div>
   );
 }

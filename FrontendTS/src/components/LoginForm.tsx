@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import "../styles/LoginForm.css";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import TokenResponse from "../models/TokenResponse";
-import axios from "axios";
 import Form from "react-bootstrap/Form";
 import { Alert, Button, Card } from "react-bootstrap";
-import { Cookies } from "react-cookie";
 
 type AdminEntity = {
   Login: string;
@@ -64,6 +61,25 @@ function LoginForm() {
       [name]: value,
     }));
   };
+
+  async function getData() {
+    try {
+      const response = await fetch("http://localhost:8080/api/admin/get", {
+        method: "POST",
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      navigate("/admin-panel");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  getData();
 
   return (
     <div
