@@ -1,6 +1,8 @@
 import { Accordion, Button, Carousel, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
+import "../styles/MainPage.css";
+
 function MainPage() {
   const navigate = useNavigate();
 
@@ -17,7 +19,7 @@ function MainPage() {
       </Container>
       <Container className="p-4 mt-4">
         <h2 className="section-header mb-2">FAQ</h2>
-        <Accordion defaultActiveKey="0">
+        <Accordion>
           <Accordion.Item eventKey="0">
             <Accordion.Header>
               Какие есть специальности в колледже?

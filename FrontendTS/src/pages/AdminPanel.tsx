@@ -1,8 +1,229 @@
+import "../styles/AdminPanel.css";
+import { useEffect, useState } from "react";
+import { AdminInfo } from "../models/Admin";
+import { useNavigate } from "react-router-dom";
+import { Button, Card, Container, Modal } from "react-bootstrap";
+import User from "../models/User";
+import Unauthorized from "../components/Unauthorized";
+import Loading from "../components/Loading";
+import CallClientPanel from "../components/AdminPanel/CallClientPanel";
+
+async function getAdmin(): Promise<AdminInfo> {
+  let admin: AdminInfo = {
+    FirstName: "",
+    LastName: "",
+    TableNumber: 0,
+  };
+
+  try {
+    const response = await fetch("http://localhost:8080/api/admin/get", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      const json = await response.json();
+      admin = {
+        FirstName: json.first_name,
+        LastName: json.last_name,
+        TableNumber: json.table_number,
+      };
+    } else if (response.status === 401) {
+      throw new Error("Unauthorized");
+    } else {
+      throw new Error("Failed to fetch admin data");
+    }
+  } catch (error) {}
+
+  return admin;
+}
+
 function AdminPanel() {
+  const [showAddAdminModal, setShowAddAdminModal] = useState(false);
+
+  const handleClose = () => setShowAddAdminModal(false);
+  const handleShow = () => setShowAddAdminModal(true);
+
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [admin, setAdmin] = useState<AdminInfo>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [client, setUser] = useState<User>({
+    FirstName: "Кирилл",
+    LastName: "Голубенко",
+    PhoneNumber: "+79879267442",
+  });
+
+  const [hasClient, setHasClient] = useState<boolean>(false);
+  const [noClient, setNoClient] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  const handleCallClient = () => {
+    if (!noClient) {
+      setHasClient(true);
+    } else {
+      setHasClient(false);
+    }
+  };
+
+  const handleAcceptClient = () => {
+    setHasClient(false);
+  };
+
+  const handleRejectClient = () => {
+    setHasClient(false);
+  };
+
+  const handleLogOut = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/admin/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        navigate("/login");
+      } else if (response.status === 401) {
+        throw new Error("Unauthorized");
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (!admin) {
+      getAdmin()
+        .then((result) => {
+          setAdmin(result);
+
+          if (result.FirstName === "") {
+            setIsAuth(false);
+          } else {
+            setIsAuth(true);
+          }
+        })
+        .catch(() => {
+          setIsAuth(false);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1125);
+        });
+    }
+  }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <div>
-      <h1>Admin Panel</h1>
-      <p>Welcome to the admin panel!</p>
+      {!isAuth ? (
+        <Unauthorized
+          handler={() => {
+            navigate("/login");
+          }}
+        />
+      ) : (
+        <Container>
+          <div className="row">
+            <div className="col-8 mt-2">
+              {hasClient ? (
+                <Container>
+                  <Card>
+                    <Card.Header as="h5">Информация о клиенте</Card.Header>
+                    <Card.Body>
+                      <Card.Text className="mb-0">
+                        Имя клиента: {client.FirstName} {client.LastName}
+                      </Card.Text>
+                      <Card.Text>
+                        Номер телефона: {client.PhoneNumber}
+                      </Card.Text>
+
+                      <Button
+                        className="primary me-2"
+                        onClick={handleRejectClient}
+                      >
+                        Отклонить
+                      </Button>
+                      <Button
+                        className="primary me-2"
+                        onClick={handleAcceptClient}
+                      >
+                        Принять
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Container>
+              ) : (
+                <CallClientPanel
+                  noClient={noClient}
+                  handleCallClient={handleCallClient}
+                />
+              )}
+            </div>
+            <div className="col-4 mt-2">
+              <Container>
+                <Card>
+                  <Card.Header as="h5">Информация о администраторе</Card.Header>
+                  <Card.Body>
+                    <Card.Text as="h5">
+                      Имя: {admin?.FirstName} {admin?.LastName}
+                    </Card.Text>
+                    <Card.Text as="h5">
+                      Стол номер: {admin?.TableNumber}
+                    </Card.Text>
+                    <Button
+                      variant="danger"
+                      className="mt-2"
+                      onClick={handleLogOut}
+                    >
+                      Выйти
+                    </Button>
+                  </Card.Body>
+                </Card>
+
+                <Card className="mt-2">
+                  <Card.Header as="h5">Функции</Card.Header>
+                  <Card.Body>
+                    <Button style={{ width: "100%" }} variant="primary" onClick={handleShow}>
+                      Добавить администратора
+                    </Button>
+                    <Button
+                      style={{ width: "100%" }}
+                      variant="primary"
+                      className="mt-2"
+                    >
+                      Количество клиентов
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Container>
+            </div>
+          </div>
+
+          <Modal show={showAddAdminModal} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Modal heading</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              Woohoo, you are reading this text in a modal!
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleClose}>
+                Save Changes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Container>
+      )}
     </div>
   );
 }

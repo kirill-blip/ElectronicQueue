@@ -1,5 +1,4 @@
 import { Button, Container } from "react-bootstrap";
-import { NavigateFunction } from "react-router-dom";
 
 interface UnauthorizedProps {
   handler: () => void;

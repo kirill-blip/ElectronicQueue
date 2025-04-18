@@ -1,6 +1,6 @@
 import { Container } from "react-bootstrap";
 import "../styles/Queue.css";
-import TicketCard from "./TicketCard";
+import TicketCard from "../components/TicketCard";
 import { useGetTickets } from "../hooks/useGetTickets";
 
 function Queue() {
