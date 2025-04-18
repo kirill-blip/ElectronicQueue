@@ -1,23 +1,32 @@
 package service
 
 import (
+	"backend/internal/apperrors"
 	"backend/internal/repository"
+	"backend/internal/utils"
 	"backend/models"
-	"time"
 )
 
+var ticket int = 0
+
 type EntryService interface {
-	GenerateEntry(int) (models.Entry, error)
+	GenerateEntry(user models.User) (int, error)
 	GetLastEntry() (int, error)
-	GetEntry(int) (models.Entry, error)
+	GetEntry(id int) (models.Entry, error)
 }
 
 type EntryServiceImpl struct {
+	userRepo        repository.UserRepository
+	adminRepo       repository.AdminRepository
 	entryRepository repository.EntryRepository
 }
 
-func EntryServiceImplInit(entryRepo repository.EntryRepository) EntryService {
-	return &EntryServiceImpl{entryRepo}
+func EntryServiceImplInit(entryRepo repository.EntryRepository, userRepo repository.UserRepository, adminRepo repository.AdminRepository) EntryService {
+	return &EntryServiceImpl{
+		userRepo,
+		adminRepo,
+		entryRepo,
+	}
 }
 
 func (e *EntryServiceImpl) GetEntry(userId int) (models.Entry, error) {
@@ -30,28 +39,29 @@ func (e *EntryServiceImpl) GetEntry(userId int) (models.Entry, error) {
 	return entry, nil
 }
 
-func (e *EntryServiceImpl) GenerateEntry(userId int) (models.Entry, error) {
-	lastTicketNumber, err := e.GetLastEntry()
+func (e *EntryServiceImpl) GenerateEntry(user models.User) (int, error) {
+	if !utils.LastFirstNameValid(user.FirstName) {
+		return 0, apperrors.InvalidFirstName
+	}
 
+	if !utils.LastFirstNameValid(user.LastName) {
+		return 0, apperrors.InvalidLastName
+	}
+
+	if !utils.ValidateKazakhstanPhone(user.NumberPhone) {
+		return 0, apperrors.InvalidPhone
+	}
+
+	ticket++
+
+	user.Ticket = ticket
+
+	userId, err := e.entryRepository.AddEntry(user)
 	if err != nil {
-		return models.Entry{}, err
+		return 0, err
 	}
 
-	entry := models.Entry{
-		TicketNumber: lastTicketNumber + 1,
-		UserId:       userId,
-		AdminId:      0,
-		Date:         time.Now(),
-		Status:       models.Waiting,
-	}
-
-	entry, err = e.entryRepository.AddEntry(entry)
-
-	if err != nil {
-		return models.Entry{}, err
-	}
-
-	return entry, nil
+	return userId, nil
 }
 
 func (e *EntryServiceImpl) GetLastEntry() (int, error) {

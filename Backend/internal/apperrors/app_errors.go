@@ -21,6 +21,7 @@ var (
 	InvalidUserID      = errors.New("invalid user id")
 	ContainesData      = errors.New("Database containes value")
 	InvalidPhone       = errors.New("invalid phone")
+	UserNotFound       = errors.New("user not found")
 )
 
 func FindErrorCode(err error) int {
@@ -30,6 +31,10 @@ func FindErrorCode(err error) int {
 
 	if err == ContainesData || err == InvalidData || err == InvalidToken || err == InvalidTokenId || err == AdminNotFound || err == LogInWrongPassword || err == LogInWrongLogin {
 		return 401
+	}
+
+	if err == UserNotFound {
+		return 404
 	}
 
 	return 500

@@ -5,11 +5,10 @@ import (
 	"backend/models"
 	"database/sql"
 	"log/slog"
-	"strconv"
 )
 
 type EntryRepository interface {
-	AddEntry(models.Entry) (models.Entry, error)
+	AddEntry(user models.User) (int, error)
 	GetEntry(int) (models.Entry, error)
 	GetLastEntry() (int, error)
 }
@@ -23,76 +22,56 @@ func EntryRepositoryInit(db *sql.DB) EntryRepository {
 }
 
 func (e *EntryRepositoryImpl) GetEntry(id int) (models.Entry, error) {
-	entryRow, err := e.db.Query(`
+	var entry models.Entry
+
+	err := e.db.QueryRow(`
         SELECT *
         FROM "entry"
-        WHERE "id" = $1
-    `, id)
+        WHERE user_id = $1
+    `, id).Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &entry.AdminId, &entry.Date, &entry.Status)
 
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return models.Entry{}, apperrors.UserNotFound
+	} else if err != nil {
 		return models.Entry{}, err
-	}
-
-	entry := models.Entry{}
-
-	for entryRow.Next() {
-		var adminId sql.NullInt64
-
-		if err := entryRow.Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &adminId, &entry.Date, &entry.Status); err != nil {
-			slog.Warn(err.Error())
-			return models.Entry{}, apperrors.ProblemWithDB
-		}
-
-		if adminId.Valid {
-			entry.AdminId = int(adminId.Int64)
-		} else {
-			entry.AdminId = 0
-		}
 	}
 
 	return entry, nil
 }
 
-func (e *EntryRepositoryImpl) AddEntry(entry models.Entry) (models.Entry, error) {
-	_, err := e.db.Exec(`
-        INSERT INTO "entry" (ticket_number, user_id, date, status)
-        VALUES ($1, $2, $3, $4)
-        RETURNING id
-    `, entry.TicketNumber, entry.UserId, entry.Date, entry.Status)
+func (e *EntryRepositoryImpl) AddEntry(user models.User) (int, error) {
+	tx, err := e.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	var userId int
+
+	err = tx.QueryRow(`
+		INSERT INTO "user" (first_name, last_name, number_phone) 
+		VALUES ($1, $2, $3) RETURNING id
+`, user.FirstName, user.LastName, user.NumberPhone).Scan(&userId)
 
 	if err != nil {
-		slog.Info(strconv.Itoa(entry.UserId))
-		return models.Entry{}, err
+		tx.Rollback()
+		return 0, err
 	}
 
-	entryRow, err := e.db.Query(`
-        SELECT *
-        FROM "entry"
-        ORDER BY id DESC
-        LIMIT 1
-    `)
+	_, err = tx.Exec(`
+		INSERT INTO entry (user_id, date, status)
+		VALUES ($1, time.Now(), models.EntryStatus.Waiting)
+`, userId)
 
 	if err != nil {
-		slog.Warn("Failed to retrieve last inserted ID: " + err.Error())
-		return models.Entry{}, err
+		tx.Rollback()
+		return 0, err
 	}
 
-	for entryRow.Next() {
-		var adminId sql.NullInt64
-
-		if err := entryRow.Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &adminId, &entry.Date, &entry.Status); err != nil {
-			slog.Warn(err.Error())
-			return models.Entry{}, apperrors.ProblemWithDB
-		}
-
-		if adminId.Valid {
-			entry.AdminId = int(adminId.Int64)
-		} else {
-			entry.AdminId = 0
-		}
+	err = tx.Commit()
+	if err != nil {
+		return 0, err
 	}
-
-	return entry, nil
+	return userId, nil
 }
 
 func (e *EntryRepositoryImpl) GetLastEntry() (int, error) {

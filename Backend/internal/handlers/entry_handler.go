@@ -5,8 +5,11 @@ import (
 	"backend/internal/service"
 	"backend/internal/utils"
 	"backend/models"
+	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type EntryHandler struct {
@@ -17,31 +20,72 @@ func NewEntryHandler(entryService service.EntryService) *EntryHandler {
 	return &EntryHandler{entryService}
 }
 
-func (u *EntryHandler) GenerateEntry(w http.ResponseWriter, r *http.Request) {
+func (u *EntryHandler) AddEntry(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	userIdValue := r.Context().Value("user")
-	userId, ok := userIdValue.(int)
+	var user models.User
 
-	if !ok {
-		http.Error(w, "UserId not found", http.StatusBadRequest)
-		return
-	}
-
-	entry, err := u.entryService.GenerateEntry(userId)
-
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		slog.Warn(err.Error())
 
 		statusCode := apperrors.FindErrorCode(err)
 
 		utils.ErrorInJSON(w, statusCode, err)
-
 		return
 	}
 
-	utils.ResponseInJSON(w, http.StatusOK, entry)
+	userId, err := u.entryService.GenerateEntry(user)
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	cookie := http.Cookie{
+		Name:     "user",
+		Value:    strconv.Itoa(userId),
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		Expires:  time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	http.SetCookie(w, &cookie)
+
+	reps := models.Response{Message: "Success"}
+
+	utils.ResponseInJSON(w, http.StatusOK, reps)
 }
+
+//func (u *EntryHandler) GenerateEntry(w http.ResponseWriter, r *http.Request) {
+//	w.Header().Set("Content-Type", "application/json")
+//
+//	userIdValue := r.Context().Value("user")
+//	userId, ok := userIdValue.(int)
+//
+//	if !ok {
+//		http.Error(w, "UserId not found", http.StatusBadRequest)
+//		return
+//	}
+//
+//	entry, err := u.entryService.GenerateEntry(userId)
+//
+//	if err != nil {
+//		slog.Warn(err.Error())
+//
+//		statusCode := apperrors.FindErrorCode(err)
+//
+//		utils.ErrorInJSON(w, statusCode, err)
+//
+//		return
+//	}
+//
+//	utils.ResponseInJSON(w, http.StatusOK, entry)
+//}
 
 func (e *EntryHandler) GetLastEntryNumber(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -72,10 +116,6 @@ func (e *EntryHandler) GetEntry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	entry, err := e.entryService.GetEntry(userId)
-
-	if entry.Status != models.Waiting {
-		utils.ResponseInJSON(w, http.StatusOK, models.Entry{})
-	}
 
 	if err != nil {
 		slog.Warn(err.Error())
