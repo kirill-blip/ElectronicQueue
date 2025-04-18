@@ -5,7 +5,6 @@ function Footer() {
   return (
     <footer className="mt-auto">
       <Navbar
-        // fixed="bottom"
         className="bg-body-secondary d-flex justify-content-center align-items-center border-top text-center"
       >
         <Container className="d-flex flex-column align-items-center">

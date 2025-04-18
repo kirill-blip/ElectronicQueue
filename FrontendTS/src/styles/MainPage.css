@@ -8,3 +8,16 @@
   font-weight: bold;
   color: #333333;
 }
+
+.image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+@media screen and (min-width: 1292px) {
+  .image {
+    width: 100%;
+  }
+}

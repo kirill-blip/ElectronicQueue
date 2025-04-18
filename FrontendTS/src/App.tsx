@@ -8,6 +8,7 @@ import TicketIssue from "./components/TicketIssue";
 import LoginForm from "./components/LoginForm";
 import AdminPanel from "./components/AdminPanel";
 import { useEffect, useState } from "react";
+import Queue from "./components/Queue";
 
 function App() {
   const [headerTitle, setHeaderTitle] = useState("Электронная очередь");
@@ -22,6 +23,7 @@ function App() {
           <Route path="/ticket-issue" element={<TicketIssue />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/admin-panel" element={<AdminPanel />} />
+          <Route path="/queue" element={<Queue />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

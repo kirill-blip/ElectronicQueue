@@ -11,12 +11,12 @@ function Main() {
 
   return (
     <div>
-      <Container className="p-5 mb-4 mt-4 rounded">
+      <Container className="p-4 mb-4 mt-4 rounded">
         <h2 className="section-header">Добро пожаловать, абитуриент!</h2>
         <p className="section-text">Получите талон на посещение</p>
         <Button onClick={handleTicketIssue}>Получить талон</Button>
       </Container>
-      <Container className="p-5 mt-4 rounded">
+      <Container className="p-4 mt-4">
         <h2 className="section-header mb-2">FAQ</h2>
         <Accordion defaultActiveKey="0">
           <Accordion.Item eventKey="0">
@@ -43,38 +43,46 @@ function Main() {
               Обучение проходит в очной форме.
             </Accordion.Body>
           </Accordion.Item>
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Стоимость обучения</Accordion.Header>
+            <Accordion.Body>
+              <p>
+                Стоимость обучения составляет <strong>1 500 000 тенге</strong>{" "}
+                за весь срок обучения.
+              </p>
+              <strong>Вы можете разделить оплату на 3 транша:</strong>
+              <p>
+                <ul>
+                  <li>1 транш 30% до 25 августа</li>
+                  <li>2 транш 35% до конца 1</li>
+                  <li>семестра 3 транш 35% до конца 2 семестра</li>
+                </ul>
+              </p>
+            </Accordion.Body>
+          </Accordion.Item>
         </Accordion>
       </Container>
-      <Container className="bg-body-tertiary p-5 mb-4 rounded">
-        <h2 className="section-header mb-3">Галерея</h2>
+      <Container className="p-4 rounded">
+        <h2 className="section-header mb-2">Галерея</h2>
         <Carousel fade data-bs-theme="light">
           <Carousel.Item>
             <img
-              className="d-block"
+              className="image d-block"
               src="/Galery/DSC01511-scaled.jpg"
               alt="Firs slide"
-              width="100%"
-              height="400px"
-              style={{ objectFit: "cover", borderRadius: "10px" }}
             />
           </Carousel.Item>
           <Carousel.Item>
             <img
-              className="d-block"
+              className="image d-block"
               src="/Galery/Library_Astana_IT_University.jpg"
-              width="100%"
-              height="400px"
-              style={{ objectFit: "cover", borderRadius: "10px" }}
               alt="Second slide"
             />
           </Carousel.Item>
           <Carousel.Item>
             <img
-              className="d-block"
+              className="image d-block"
               src="/Galery/_Astana_IT_Univerist.jpg"
-              width="100%"
-              height="400px"
-              style={{ objectFit: "cover", borderRadius: "10px" }}
               alt="Third slide"
             />
           </Carousel.Item>
