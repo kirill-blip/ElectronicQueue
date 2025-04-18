@@ -1,55 +1,29 @@
 import "../styles/AdminPanel.css";
-import { useEffect, useState } from "react";
-import { AdminInfo } from "../models/Admin";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Container, Modal } from "react-bootstrap";
+import { Button, Card, Container } from "react-bootstrap";
 import User from "../models/User";
 import Unauthorized from "../components/Unauthorized";
 import Loading from "../components/Loading";
 import CallClientPanel from "../components/AdminPanel/CallClientPanel";
-
-async function getAdmin(): Promise<AdminInfo> {
-  let admin: AdminInfo = {
-    FirstName: "",
-    LastName: "",
-    TableNumber: 0,
-  };
-
-  try {
-    const response = await fetch("http://localhost:8080/api/admin/get", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-
-    if (response.ok) {
-      const json = await response.json();
-      admin = {
-        FirstName: json.first_name,
-        LastName: json.last_name,
-        TableNumber: json.table_number,
-      };
-    } else if (response.status === 401) {
-      throw new Error("Unauthorized");
-    } else {
-      throw new Error("Failed to fetch admin data");
-    }
-  } catch (error) {}
-
-  return admin;
-}
+import AddAdminModal from "../components/AdminPanel/AddAdminModal";
+import CountEntriesModal from "../components/AdminPanel/CountEntriesModal";
+import { useLogout } from "../hooks/useLogout";
+import { useAdmin } from "../hooks/useGetAdmin";
 
 function AdminPanel() {
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
+  const [showCountEntriesModal, setShowCountEntriesModal] = useState(false);
 
-  const handleClose = () => setShowAddAdminModal(false);
-  const handleShow = () => setShowAddAdminModal(true);
+  const { admin, error, loading } = useAdmin();
+
+  const handleCloseAdminModal = () => setShowAddAdminModal(false);
+  const handleShowAdminModal = () => setShowAddAdminModal(true);
+
+  const handleCloseCountEntriesModal = () => setShowCountEntriesModal(false);
+  const handleShowCountEntriesModal = () => setShowCountEntriesModal(true);
 
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const [admin, setAdmin] = useState<AdminInfo>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [client, setUser] = useState<User>({
     FirstName: "Кирилл",
@@ -78,46 +52,14 @@ function AdminPanel() {
     setHasClient(false);
   };
 
-  const handleLogOut = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/admin/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+  const handleLogout = useLogout();
 
-      if (response.ok) {
-        navigate("/login");
-      } else if (response.status === 401) {
-        throw new Error("Unauthorized");
-      }
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    if (!admin) {
-      getAdmin()
-        .then((result) => {
-          setAdmin(result);
-
-          if (result.FirstName === "") {
-            setIsAuth(false);
-          } else {
-            setIsAuth(true);
-          }
-        })
-        .catch(() => {
-          setIsAuth(false);
-        })
-        .finally(() => {
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 1125);
-        });
-    }
-  }, []);
-
-  if (isLoading) {
+  if (loading) {
     return <Loading />;
+  }
+
+  if (admin.FirstName !== "" && !isAuth) {
+    setIsAuth(true);
   }
 
   return (
@@ -180,7 +122,7 @@ function AdminPanel() {
                     <Button
                       variant="danger"
                       className="mt-2"
-                      onClick={handleLogOut}
+                      onClick={handleLogout}
                     >
                       Выйти
                     </Button>
@@ -190,13 +132,18 @@ function AdminPanel() {
                 <Card className="mt-2">
                   <Card.Header as="h5">Функции</Card.Header>
                   <Card.Body>
-                    <Button style={{ width: "100%" }} variant="primary" onClick={handleShow}>
+                    <Button
+                      style={{ width: "100%" }}
+                      variant="primary"
+                      onClick={handleShowAdminModal}
+                    >
                       Добавить администратора
                     </Button>
                     <Button
                       style={{ width: "100%" }}
                       variant="primary"
                       className="mt-2"
+                      onClick={handleShowCountEntriesModal}
                     >
                       Количество клиентов
                     </Button>
@@ -206,22 +153,14 @@ function AdminPanel() {
             </div>
           </div>
 
-          <Modal show={showAddAdminModal} onHide={handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Modal heading</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              Woohoo, you are reading this text in a modal!
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
-                Close
-              </Button>
-              <Button variant="primary" onClick={handleClose}>
-                Save Changes
-              </Button>
-            </Modal.Footer>
-          </Modal>
+          <AddAdminModal
+            show={showAddAdminModal}
+            onHide={handleCloseAdminModal}
+          />
+          <CountEntriesModal
+            show={showCountEntriesModal}
+            handleClose={handleCloseCountEntriesModal}
+          />
         </Container>
       )}
     </div>

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "../styles/LoginForm.css";
-import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import { Alert, Button, Card } from "react-bootstrap";
+import PasswordForm from "../components/PasswordForm";
 
 type AdminEntity = {
   Login: string;
@@ -19,7 +19,6 @@ function LoginPage() {
   const [error, setError] = useState<boolean>(false);
 
   const navigate = useNavigate();
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleSumbit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,10 +43,6 @@ function LoginPage() {
       setError(true);
       console.error("Error during login:", error);
     }
-  };
-
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible((prev) => !prev);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,21 +95,7 @@ function LoginPage() {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Пароль</Form.Label>
-              <div className="password-container">
-                <Form.Control
-                  type={isPasswordVisible ? "text" : "password"}
-                  id="password-input"
-                  name="Password"
-                  value={adminEntity.Password}
-                  onChange={handleInputChange}
-                />
-                <span
-                  className="visibility-icon"
-                  onClick={togglePasswordVisibility}
-                >
-                  {isPasswordVisible ? <MdVisibilityOff /> : <MdVisibility />}
-                </span>
-              </div>
+              <PasswordForm handleInputChange={handleInputChange} password={adminEntity.Password} />
             </Form.Group>
             <Button type="submit" className="w-100">
               Войти
