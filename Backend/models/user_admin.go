@@ -15,9 +15,9 @@ type Admin struct {
 }
 
 type User struct {
+	NumberPhone string `json:"number_phone"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
-	NumberPhone string `json:"number_phone"`
 	Ticket      int    `json:"ticket_number,omitempty"`
 }
 

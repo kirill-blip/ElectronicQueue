@@ -28,7 +28,7 @@ CREATE TABLE entry (
                          ticket_number INTEGER NOT NULL,
                          user_id INTEGER REFERENCES "user"(id),
                          admin_id INTEGER REFERENCES "admin"(id),
-                         date TIMESTAMP,
+                         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                          status VARCHAR(50)
 );
 

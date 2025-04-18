@@ -58,8 +58,8 @@ func (e *EntryRepositoryImpl) AddEntry(user models.User) (int, error) {
 	}
 
 	_, err = tx.Exec(`
-		INSERT INTO entry (user_id, date, status)
-		VALUES ($1, time.Now(), models.EntryStatus.Waiting)
+		INSERT INTO entry (user_id, status)
+		VALUES ($1, models.EntryStatus.Waiting)
 `, userId)
 
 	if err != nil {
