@@ -23,17 +23,24 @@ func EntryRepositoryInit(db *sql.DB) EntryRepository {
 
 func (e *EntryRepositoryImpl) GetEntry(id int) (models.Entry, error) {
 	var entry models.Entry
+	var adminId sql.NullInt64
 
 	err := e.db.QueryRow(`
         SELECT *
         FROM "entry"
         WHERE user_id = $1
-    `, id).Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &entry.AdminId, &entry.Date, &entry.Status)
+    `, id).Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &adminId, &entry.Date, &entry.Status)
 
 	if err == sql.ErrNoRows {
 		return models.Entry{}, apperrors.UserNotFound
 	} else if err != nil {
 		return models.Entry{}, err
+	}
+
+	if adminId.Valid {
+		entry.AdminId = int(adminId.Int64)
+	} else {
+		entry.AdminId = 0
 	}
 
 	return entry, nil
@@ -58,9 +65,9 @@ func (e *EntryRepositoryImpl) AddEntry(user models.User) (int, error) {
 	}
 
 	_, err = tx.Exec(`
-		INSERT INTO entry (user_id, status)
-		VALUES ($1, models.EntryStatus.Waiting)
-`, userId)
+		INSERT INTO entry (ticket_number, user_id, status)
+		VALUES ($1, $2, 'Waiting')
+`, user.Ticket, userId)
 
 	if err != nil {
 		tx.Rollback()
