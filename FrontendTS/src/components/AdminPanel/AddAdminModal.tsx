@@ -78,7 +78,6 @@ function AddAdminModal({ show, onHide }: AddAdminModalProps) {
               onChange={handleInputChange}
             />
           </Form.Group>
-
           <Form.Group className="mb-3">
             <Form.Label>Логин</Form.Label>
             <Form.Control

@@ -1,14 +1,22 @@
-interface Entry {
+import User from "./User";
+
+export interface Entry {
     TicketNumber: number;
     UserId: number;
     AdminId: number;
+    EntryStatus: EntryStatus;
 }
 
-enum EntryStatus {
+export interface EntryInfo {
+    EntryId: number;
+    User: User;
+}
+
+export enum EntryStatus {
+    None = "None",
+    Waiting = "Waiting",
     Processing = "Processing",
     CanceledByUser = "CanceledByUser",
     Canceled = "Canceled",
     Accepted = "Accepted"
 }
-
-export default Entry;

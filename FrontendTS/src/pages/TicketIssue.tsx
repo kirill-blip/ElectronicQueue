@@ -8,6 +8,8 @@ import { useTicketIssue } from "../hooks/useTicketIssue";
 import Loading from "../components/Loading";
 import TicketIssueForm from "../components/TicketIssueForm";
 import TicketIssueInfo from "../components/TicketIssueInfo";
+import { EntryStatus } from "../models/Entry";
+import TicketIssueRecreate from "../components/TicketIssueRecreate";
 
 function TicketIssue() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -67,12 +69,14 @@ function TicketIssue() {
     return <Loading />;
   }
 
+  console.log(fetchedTicketData.EntryStatus);
+
   return (
     <div
       className="container d-flex justify-content-center align-items-center"
       style={{ minHeight: "calc(95vh - 56px - 56px)" }}
     >
-      {fetchedTicketData.TicketNumber === 0 ? (
+      {fetchedTicketData.EntryStatus === EntryStatus.None && (
         <TicketIssueForm
           user={user}
           handleSumbit={handleSumbit}
@@ -80,13 +84,18 @@ function TicketIssue() {
           handlePhoneChange={handlePhoneChange}
           errorMessage={errorMessage}
         />
-      ) : (
+      )}
+      {fetchedTicketData.EntryStatus === EntryStatus.Waiting && (
         <TicketIssueInfo
           fetchedTicketData={fetchedTicketData}
           fetchedAdmin={fetchedAdmin}
           fetchedUser={fetchedUser}
         />
       )}
+      {fetchedTicketData.EntryStatus !== EntryStatus.None &&
+        fetchedTicketData.EntryStatus !== EntryStatus.Waiting && (
+          <TicketIssueRecreate user={user} />
+        )}
     </div>
   );
 }
