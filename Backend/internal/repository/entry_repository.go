@@ -130,8 +130,9 @@ func (e *EntryRepositoryImpl) GetUserRepo(adminId int) (models.GetEntry, error) 
 	var userId int
 
 	err = tx.QueryRow(`
-		SELECT id, user_id from entry 
-		WHERE status = 'Waiting' AND
+		SELECT id, user_id 
+		FROM entry 
+		WHERE status = 'Waiting'
 		AND date::date = CURRENT_DATE;
 	`).Scan(&entryId, &userId)
 
@@ -155,8 +156,8 @@ func (e *EntryRepositoryImpl) GetUserRepo(adminId int) (models.GetEntry, error) 
 
 	err = tx.QueryRow(`
 		SELECT e.id, u.id, u.first_name, u.last_name, u.number_phone 
-		from entry e
-		JOIN user u 
+		FROM "entry" e
+		JOIN "user" u 
 		    ON e.user_id = u.id
 		WHERE e.user_id = $1
 `, userId).Scan(&entry.EntryId, &entry.UserId, &entry.FirstName, &entry.LastName, &entry.NumberPhone)
