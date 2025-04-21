@@ -2,7 +2,6 @@ import "../styles/AdminPanel.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Container } from "react-bootstrap";
-import User from "../models/User";
 import Unauthorized from "../components/Unauthorized";
 import Loading from "../components/Loading";
 import CallClientPanel from "../components/AdminPanel/CallClientPanel";
@@ -10,6 +9,7 @@ import AddAdminModal from "../components/AdminPanel/AddAdminModal";
 import CountEntriesModal from "../components/AdminPanel/CountEntriesModal";
 import { useLogout } from "../hooks/useLogout";
 import { useAdmin } from "../hooks/useGetAdmin";
+import { EntryInfo } from "../models/Entry";
 
 function AdminPanel() {
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
@@ -25,10 +25,14 @@ function AdminPanel() {
 
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
-  const [client, setUser] = useState<User>({
-    FirstName: "Кирилл",
-    LastName: "Голубенко",
-    PhoneNumber: "+79879267442",
+  const [entry, setUser] = useState<EntryInfo>({
+    EntryId: 0,
+    UserId: 0,
+    User: {
+      FirstName: "",
+      LastName: "",
+      PhoneNumber: "",
+    },
   });
 
   const [hasClient, setHasClient] = useState<boolean>(false);
@@ -36,11 +40,25 @@ function AdminPanel() {
 
   const navigate = useNavigate();
 
-  const handleCallClient = () => {
-    if (!noClient) {
+  const handleCallClient = async () => {
+    const response = await fetch("http://localhost:8080/api/entry/get-entry", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      
+      setUser({
+        EntryId: data.entry_id,
+        UserId: data.user_id,
+        User: {
+          FirstName: data.first_name,
+          LastName: data.last_name,
+          PhoneNumber: data.number_phone,
+        },
+      })
       setHasClient(true);
-    } else {
-      setHasClient(false);
     }
   };
 
@@ -80,10 +98,10 @@ function AdminPanel() {
                     <Card.Header as="h5">Информация о клиенте</Card.Header>
                     <Card.Body>
                       <Card.Text className="mb-0">
-                        Имя клиента: {client.FirstName} {client.LastName}
+                        Имя клиента: {entry.User.FirstName} {entry.User.LastName}
                       </Card.Text>
                       <Card.Text>
-                        Номер телефона: {client.PhoneNumber}
+                        Номер телефона: {entry.User.PhoneNumber}
                       </Card.Text>
 
                       <Button

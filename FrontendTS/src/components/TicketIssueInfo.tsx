@@ -2,7 +2,7 @@ import { Alert, Button, Card } from "react-bootstrap";
 import { convertTicketNumber } from "../utils/converters";
 import User from "../models/User";
 import { AdminInfo } from "../models/Admin";
-import { Entry } from "../models/Entry";
+import { Entry, EntryStatus } from "../models/Entry";
 
 interface TicketIssueInfoProps {
   fetchedTicketData: Entry;
@@ -31,7 +31,7 @@ function TicketIssueInfo({
             <strong>Номер телефона:</strong> {fetchedUser.PhoneNumber}
           </Card.Text>
 
-          {fetchedAdmin.TableNumber !== 0 ? (
+          {fetchedTicketData.EntryStatus === EntryStatus.Processing ? (
             <Alert variant="info" className="mt-0">
               Пожалуйста, подойдите к{" "}
               <strong>столику {fetchedAdmin.TableNumber}</strong>.

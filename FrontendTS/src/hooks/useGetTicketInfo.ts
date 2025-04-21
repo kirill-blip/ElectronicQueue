@@ -29,13 +29,13 @@ const fetchUserInfo = async () => {
     return response.json();
 }
 
-const fetchAdminInfo = async () => {
+const fetchAdminInfo = async (admin_id:number) => {
     const response = await fetch("http://localhost:8080/api/entry/get-admin", {
         method: "POST",
         body: JSON.stringify(
-            {
-                id: 1
-            }),
+        {
+            id: admin_id
+        }),
     });
 
     if (!response.ok) {
@@ -77,6 +77,7 @@ export const useGetTicketInfo = (refreshKey: number) => {
                     EntryStatus: EntryStatus[ticketResponse.status as keyof typeof EntryStatus],
                 });
 
+                
                 const userResponse = await fetchUserInfo();
                 setUser({
                     FirstName: userResponse.first_name,
@@ -84,7 +85,8 @@ export const useGetTicketInfo = (refreshKey: number) => {
                     PhoneNumber: userResponse.number_phone,
                 });
 
-                const adminResponse = await fetchAdminInfo();
+                const adminResponse = await fetchAdminInfo(ticketResponse.admin_id);
+                
                 setAdmin({
                     FirstName: adminResponse.first_name,
                     LastName: adminResponse.last_name,

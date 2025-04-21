@@ -9,6 +9,7 @@ export interface Entry {
 
 export interface EntryInfo {
     EntryId: number;
+    UserId: number;
     User: User;
 }
 

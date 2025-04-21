@@ -85,17 +85,17 @@ function TicketIssue() {
           errorMessage={errorMessage}
         />
       )}
-      {fetchedTicketData.EntryStatus === EntryStatus.Waiting && (
-        <TicketIssueInfo
-          fetchedTicketData={fetchedTicketData}
-          fetchedAdmin={fetchedAdmin}
-          fetchedUser={fetchedUser}
-        />
-      )}
-      {fetchedTicketData.EntryStatus !== EntryStatus.None &&
-        fetchedTicketData.EntryStatus !== EntryStatus.Waiting && (
-          <TicketIssueRecreate user={user} />
+      {(fetchedTicketData.EntryStatus === EntryStatus.Waiting ||
+        fetchedTicketData.EntryStatus === EntryStatus.Processing) && (
+          <TicketIssueInfo
+            fetchedTicketData={fetchedTicketData}
+            fetchedAdmin={fetchedAdmin}
+            fetchedUser={fetchedUser}
+          />
         )}
+      {/* {fetchedTicketData.EntryStatus !== EntryStatus.None && (
+          <TicketIssueRecreate user={user} />
+        )} */}
     </div>
   );
 }
