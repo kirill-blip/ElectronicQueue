@@ -1,30 +1,10 @@
-import Entry from "../models/Entry";
 import User from "../models/User";
 
-const addUser = async (user: User) => {
-    const response = await fetch("http://localhost:8080/api/user/add", {
-        method: "POST",
-        body: JSON.stringify({
-            number_phone: user.PhoneNumber,
-            first_name: user.FirstName,
-            last_name: user.LastName,
-        }),
-        credentials: "include",
-    });
+function isObject(value: any): boolean {
+    return typeof value === 'object' && value !== null;
+}
 
-    return response;
-};
-
-const generateTicket = async () => {
-    const response = await fetch("http://localhost:8080/api/entry/generate", {
-        method: "POST",
-        credentials: "include",
-    });
-
-    return response;
-};
-
-const createTicket = async (user:User) => {
+const createTicket = async (user: User) => {
     const response = await fetch("http://localhost:8080/api/entry/create", {
         method: "POST",
         credentials: "include",
@@ -48,12 +28,23 @@ export const useTicketIssue = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrorMessage(errorData.message || "Произошла ошибка при получении талона.");
-                return;
-            }            
+
+                if (errorData.error === "pq: duplicate key value violates unique constraint \"user_number_phone_key\"") {
+                    setErrorMessage("Пользователь с таким номером телефона уже существует.");
+                }
+                else if (errorData.error === "invalid phone"){
+                    setErrorMessage("Номер телефона должен быть только казахским.");
+                }
+                else if (errorData.error === "first name isn't valid") {
+                    setErrorMessage("Имя должно быть из букв русского или казахского алфавитов.");
+                } else if (errorData.error === "last name isn't valid") {
+                    setErrorMessage("Фамилия должна быть из букв русского или казахского алфавитов.");
+                } else {
+                    setErrorMessage(errorData.message || "Произошла ошибка при получении талона.");
+                }
+            }
         } catch (error) {
-            console.error("Ошибка при выдаче талона:", error);
-            setErrorMessage("Произошла ошибка при получении талона.");
+            setErrorMessage("Произошла ошибка при получении талона.1");
         }
     };
 };

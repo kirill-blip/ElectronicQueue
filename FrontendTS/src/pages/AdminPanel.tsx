@@ -1,5 +1,5 @@
 import "../styles/AdminPanel.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Container } from "react-bootstrap";
 import Unauthorized from "../components/Unauthorized";
@@ -48,7 +48,7 @@ function AdminPanel() {
 
     if (response.ok) {
       const data = await response.json();
-      
+
       setUser({
         EntryId: data.entry_id,
         UserId: data.user_id,
@@ -57,16 +57,25 @@ function AdminPanel() {
           LastName: data.last_name,
           PhoneNumber: data.number_phone,
         },
-      })
+      });
+
+      localStorage.setItem("Entry", JSON.stringify(data));
+
       setHasClient(true);
+    } else {
+      const errorData = await response.json();
+      console.error("Error fetching entry data:", errorData);
+      setNoClient(true);
     }
   };
 
   const handleAcceptClient = () => {
+    localStorage.removeItem("Entry");
     setHasClient(false);
   };
 
   const handleRejectClient = () => {
+    localStorage.removeItem("Entry");
     setHasClient(false);
   };
 
@@ -78,6 +87,24 @@ function AdminPanel() {
 
   if (admin.FirstName !== "" && !isAuth) {
     setIsAuth(true);
+  }
+
+  if (localStorage.getItem("Entry") !== null && !hasClient) {
+    const entryData = localStorage.getItem("Entry");
+
+    if (entryData) {
+      const data = JSON.parse(entryData);
+      setUser({
+        EntryId: data.entry_id,
+        UserId: data.user_id,
+        User: {
+          FirstName: data.first_name,
+          LastName: data.last_name,
+          PhoneNumber: data.number_phone,
+        },
+      });
+      setHasClient(true);
+    }
   }
 
   return (
@@ -98,7 +125,8 @@ function AdminPanel() {
                     <Card.Header as="h5">Информация о клиенте</Card.Header>
                     <Card.Body>
                       <Card.Text className="mb-0">
-                        Имя клиента: {entry.User.FirstName} {entry.User.LastName}
+                        Имя клиента: {entry.User.FirstName}{" "}
+                        {entry.User.LastName}
                       </Card.Text>
                       <Card.Text>
                         Номер телефона: {entry.User.PhoneNumber}

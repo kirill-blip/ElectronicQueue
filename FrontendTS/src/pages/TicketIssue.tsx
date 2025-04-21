@@ -44,6 +44,7 @@ function TicketIssue() {
       await issueTicket(user, setErrorMessage);
       setRefreshKey((prevKey) => prevKey + 1);
     } catch (error) {
+      console.error(error);
       setErrorMessage("Произошла ошибка при получении талона.");
     }
   };
@@ -93,9 +94,11 @@ function TicketIssue() {
             fetchedUser={fetchedUser}
           />
         )}
-      {/* {fetchedTicketData.EntryStatus !== EntryStatus.None && (
-          <TicketIssueRecreate user={user} />
-        )} */}
+      {fetchedTicketData.EntryStatus !== EntryStatus.None &&
+      fetchedTicketData.EntryStatus !== EntryStatus.Waiting &&
+      fetchedTicketData.EntryStatus !== EntryStatus.Processing && (
+          <TicketIssueRecreate user={fetchedUser} />
+        )}
     </div>
   );
 }

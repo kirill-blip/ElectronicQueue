@@ -135,10 +135,12 @@ func (e *EntryHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	adminIdValue := r.Context().Value("admin_id")
 	adminId, ok := adminIdValue.(int)
+
 	if !ok {
 		http.Error(w, "AdminId not found", http.StatusBadRequest)
 		return
 	}
+
 	entry, err := e.entryService.GetUserService(adminId)
 	if err != nil {
 		slog.Warn(err.Error())

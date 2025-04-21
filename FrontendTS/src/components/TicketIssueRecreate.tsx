@@ -10,7 +10,7 @@ function TicketIssueRecreate({ user }: TicketIssueRecreateProps) {
     <div className="col-12 col-md-8 col-lg-5">
       <Card className="p-3 shadow">
         <Card.Title as="h4" className="text-center">
-          Выдача нового талона
+          <strong>Выдача нового талона</strong>
         </Card.Title>
         <Card.Body>
           <Card.Text>
