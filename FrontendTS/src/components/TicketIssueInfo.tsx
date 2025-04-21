@@ -1,13 +1,13 @@
 import { Alert, Button, Card } from "react-bootstrap";
 import { convertTicketNumber } from "../utils/converters";
-import Entry from "../models/Entry";
 import User from "../models/User";
-import { Admin } from "../models/Admin";
+import { AdminInfo } from "../models/Admin";
+import { Entry } from "../models/Entry";
 
 interface TicketIssueInfoProps {
   fetchedTicketData: Entry;
   fetchedUser: User;
-  fetchedAdmin: Admin;
+  fetchedAdmin: AdminInfo;
 }
 
 function TicketIssueInfo({
@@ -25,12 +25,10 @@ function TicketIssueInfo({
         </Card.Title>
         <Card.Body>
           <Card.Text>
-            <strong>Имя:</strong> {fetchedUser.FirstName}{" "}
-            {fetchedUser.LastName}
+            <strong>Имя:</strong> {fetchedUser.FirstName} {fetchedUser.LastName}
           </Card.Text>
           <Card.Text>
-            <strong>Номер телефона:</strong>{" "}
-            {fetchedUser.PhoneNumber}
+            <strong>Номер телефона:</strong> {fetchedUser.PhoneNumber}
           </Card.Text>
 
           {fetchedAdmin.TableNumber !== 0 ? (

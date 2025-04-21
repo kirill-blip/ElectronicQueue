@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Entry from "../models/Entry";
+import { Entry, EntryStatus } from "../models/Entry";
 import User from "../models/User";
-import { Admin } from "../models/Admin";
+import { AdminInfo } from "../models/Admin";
 
 const fetchTicketData = async () => {
     const response = await fetch("http://localhost:8080/api/entry/get", {
@@ -50,6 +50,7 @@ export const useGetTicketInfo = (refreshKey: number) => {
         UserId: 0,
         AdminId: 0,
         TicketNumber: 0,
+        EntryStatus: EntryStatus.None,
     })
 
     const [user, setUser] = useState<User>({
@@ -58,7 +59,7 @@ export const useGetTicketInfo = (refreshKey: number) => {
         PhoneNumber: "",
     });
 
-    const [admin, setAdmin] = useState<Admin>({
+    const [admin, setAdmin] = useState<AdminInfo>({
         FirstName: "",
         LastName: "",
         TableNumber: 0,
@@ -73,6 +74,7 @@ export const useGetTicketInfo = (refreshKey: number) => {
                     UserId: ticketResponse.user_id,
                     AdminId: ticketResponse.admin_id,
                     TicketNumber: ticketResponse.ticket_number,
+                    EntryStatus: EntryStatus[ticketResponse.status as keyof typeof EntryStatus],
                 });
 
                 const userResponse = await fetchUserInfo();
