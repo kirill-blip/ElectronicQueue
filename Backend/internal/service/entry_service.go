@@ -58,6 +58,7 @@ func (e *EntryServiceImpl) GenerateEntry(user models.User) (int, error) {
 
 	userId, err := e.entryRepository.AddEntry(user)
 	if err != nil {
+		ticket--
 		return 0, err
 	}
 
