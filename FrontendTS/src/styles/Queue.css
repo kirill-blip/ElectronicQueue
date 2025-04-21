@@ -1,0 +1,11 @@
+.text-number {
+  font-size: 30px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
