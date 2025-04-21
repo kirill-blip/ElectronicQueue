@@ -129,3 +129,25 @@ func (e *EntryHandler) GetEntry(w http.ResponseWriter, r *http.Request) {
 
 	utils.ResponseInJSON(w, http.StatusOK, entry)
 }
+
+func (e *EntryHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	adminIdValue := r.Context().Value("admin_id")
+	adminId, ok := adminIdValue.(int)
+	if !ok {
+		http.Error(w, "AdminId not found", http.StatusBadRequest)
+		return
+	}
+	entry, err := e.entryService.GetUserService(adminId)
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	utils.ResponseInJSON(w, http.StatusOK, entry)
+}

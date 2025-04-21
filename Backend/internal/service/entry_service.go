@@ -13,6 +13,7 @@ type EntryService interface {
 	GenerateEntry(user models.User) (int, error)
 	GetLastEntry() (int, error)
 	GetEntry(id int) (models.Entry, error)
+	GetUserService(adminId int) (models.GetEntry, error)
 }
 
 type EntryServiceImpl struct {
@@ -70,6 +71,15 @@ func (e *EntryServiceImpl) GetLastEntry() (int, error) {
 
 	if err != nil {
 		return entry, err
+	}
+
+	return entry, nil
+}
+
+func (e *EntryServiceImpl) GetUserService(adminId int) (models.GetEntry, error) {
+	entry, err := e.entryRepository.GetUserRepo(adminId)
+	if err != nil {
+		return models.GetEntry{}, err
 	}
 
 	return entry, nil

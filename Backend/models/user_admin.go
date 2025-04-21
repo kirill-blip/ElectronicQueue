@@ -35,3 +35,11 @@ type AdminPanel struct {
 	LastName  string `json:"last_name"`
 	Table     int    `json:"table_number"`
 }
+
+type GetEntry struct {
+	EntryId     int    `json:"entry_id"`
+	UserId      int    `json:"user_id"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	NumberPhone string `json:"number_phone"`
+}

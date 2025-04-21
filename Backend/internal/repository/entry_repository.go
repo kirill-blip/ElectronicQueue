@@ -11,6 +11,7 @@ type EntryRepository interface {
 	AddEntry(user models.User) (int, error)
 	GetEntry(int) (models.Entry, error)
 	GetLastEntry() (int, error)
+	GetUserRepo(adminId int) (models.GetEntry, error)
 }
 
 type EntryRepositoryImpl struct {
@@ -117,4 +118,58 @@ func (e *EntryRepositoryImpl) GetLastEntry() (int, error) {
 	}
 
 	return entry.TicketNumber, nil
+}
+
+func (e *EntryRepositoryImpl) GetUserRepo(adminId int) (models.GetEntry, error) {
+	tx, err := e.db.Begin()
+	if err != nil {
+		return models.GetEntry{}, err
+	}
+
+	var entryId int
+	var userId int
+
+	err = tx.QueryRow(`
+		SELECT id, user_id from entry 
+		WHERE status = 'Waiting' AND
+		AND date::date = CURRENT_DATE;
+	`).Scan(&entryId, &userId)
+
+	if err != nil {
+		tx.Rollback()
+		return models.GetEntry{}, err
+	}
+
+	_, err = tx.Exec(`
+    UPDATE entry
+    SET status = $1, admin_id = $2
+    WHERE id = $3
+`, "Processing", adminId, entryId)
+
+	if err != nil {
+		tx.Rollback()
+		return models.GetEntry{}, err
+	}
+
+	var entry models.GetEntry
+
+	err = tx.QueryRow(`
+		SELECT e.id, u.id, u.first_name, u.last_name, u.number_phone 
+		from entry e
+		JOIN user u 
+		    ON e.user_id = u.id
+		WHERE e.user_id = $1
+`, userId).Scan(&entry.EntryId, &entry.UserId, &entry.FirstName, &entry.LastName, &entry.NumberPhone)
+
+	if err != nil {
+		tx.Rollback()
+		return models.GetEntry{}, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return models.GetEntry{}, err
+	}
+
+	return entry, nil
 }

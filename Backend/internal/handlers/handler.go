@@ -37,6 +37,7 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 	mux.HandleFunc("POST /api/entry/create", entryHandler.AddEntry)
 	mux.HandleFunc("GET /api/entry/get", middleware.UserMiddleware(entryHandler.GetEntry))
 	mux.HandleFunc("GET /api/entry/get-last-entry", entryHandler.GetLastEntryNumber)
+	mux.HandleFunc("GET /api/entry/get-entry", middleware.AdminAuthMiddleware(entryHandler.GetUser))
 	mux.HandleFunc("POST /api/entry/get-admin", adminHandler.GetAdmin)
 
 	return mux, nil

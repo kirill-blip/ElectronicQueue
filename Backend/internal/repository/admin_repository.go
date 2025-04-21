@@ -38,7 +38,7 @@ func (r *AdminRepositoryImpl) GetAdmins() ([]models.Admin, error) {
 	var admins []models.Admin
 
 	rows, err := r.db.Query(`
-    SELECT login, password, table_number
+    SELECT first_name, last_name, login, table_number
     FROM "admin"`)
 
 	if err != nil {

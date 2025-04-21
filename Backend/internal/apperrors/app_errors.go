@@ -22,6 +22,8 @@ var (
 	ContainesData      = errors.New("Database containes value")
 	InvalidPhone       = errors.New("invalid phone")
 	UserNotFound       = errors.New("user not found")
+	NoUniqueTable      = errors.New("table already exist")
+	NoUniqueLogin      = errors.New("login already exist")
 )
 
 func FindErrorCode(err error) int {
@@ -29,7 +31,7 @@ func FindErrorCode(err error) int {
 		return 400
 	}
 
-	if err == ContainesData || err == InvalidData || err == InvalidToken || err == InvalidTokenId || err == AdminNotFound || err == LogInWrongPassword || err == LogInWrongLogin {
+	if err == NoUniqueTable || err == NoUniqueLogin || err == ContainesData || err == InvalidData || err == InvalidToken || err == InvalidTokenId || err == AdminNotFound || err == LogInWrongPassword || err == LogInWrongLogin {
 		return 401
 	}
 

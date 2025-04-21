@@ -50,6 +50,20 @@ func (s *AdminServiceImpl) RegisterAdmin(admin models.Admin) error {
 		return apperrors.InvalidFirstName
 	}
 
+	allAdmins, err := s.GetAdmins()
+	if err != nil {
+		return err
+	}
+
+	for _, admins := range allAdmins {
+		if admins.Login == admin.Login {
+			return apperrors.NoUniqueLogin
+		}
+		if admins.TableNumber == admin.TableNumber {
+			return apperrors.NoUniqueTable
+		}
+	}
+
 	hashPassword, err := utils.HashPassword(admin.Password)
 	if err != nil {
 		return apperrors.ProblemWithServer

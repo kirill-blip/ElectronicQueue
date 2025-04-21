@@ -21,6 +21,7 @@ CREATE TABLE "admin" (
                          password VARCHAR(255) NOT NULL,
                          table_number INTEGER NOT NULL,
                          status BOOLEAN DEFAULT FALSE
+
 );
 
 CREATE TABLE entry (
