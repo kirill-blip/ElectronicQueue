@@ -90,3 +90,42 @@ func (u *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	utils.ResponseInJSON(w, http.StatusOK, user)
 }
+
+func (u *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	userIdValue := r.Context().Value("user")
+	userId, ok := userIdValue.(int)
+
+	if !ok {
+		http.Error(w, "UserId undefined", http.StatusNotFound)
+		return
+	}
+
+	var user models.User
+
+	err := json.NewDecoder(r.Body).Decode(&user)
+
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+
+		return
+	}
+
+	err = u.userService.UpdateUserService(user, userId)
+
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	utils.ResponseInJSON(w, http.StatusOK, user)
+}

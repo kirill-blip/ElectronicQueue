@@ -61,31 +61,31 @@ func (u *EntryHandler) AddEntry(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseInJSON(w, http.StatusOK, reps)
 }
 
-//func (u *EntryHandler) GenerateEntry(w http.ResponseWriter, r *http.Request) {
-//	w.Header().Set("Content-Type", "application/json")
-//
-//	userIdValue := r.Context().Value("user")
-//	userId, ok := userIdValue.(int)
-//
-//	if !ok {
-//		http.Error(w, "UserId not found", http.StatusBadRequest)
-//		return
-//	}
-//
-//	entry, err := u.entryService.GenerateEntry(userId)
-//
-//	if err != nil {
-//		slog.Warn(err.Error())
-//
-//		statusCode := apperrors.FindErrorCode(err)
-//
-//		utils.ErrorInJSON(w, statusCode, err)
-//
-//		return
-//	}
-//
-//	utils.ResponseInJSON(w, http.StatusOK, entry)
-//}
+func (u *EntryHandler) GenerateEntry(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	userIdValue := r.Context().Value("user")
+	userId, ok := userIdValue.(int)
+
+	if !ok {
+		http.Error(w, "UserId not found", http.StatusBadRequest)
+		return
+	}
+
+	entry, err := u.entryService.GenerateEntryRepeat(userId)
+
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+
+		return
+	}
+
+	utils.ResponseInJSON(w, http.StatusOK, map[string]int{"ticket_number": entry})
+}
 
 func (e *EntryHandler) GetLastEntryNumber(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -152,4 +152,20 @@ func (e *EntryHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.ResponseInJSON(w, http.StatusOK, entry)
+}
+
+func (e *EntryHandler) GetCountEntryHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	count, err := e.entryService.GetCountEntryService()
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	utils.ResponseInJSON(w, http.StatusOK, map[string]int{"count": count})
 }

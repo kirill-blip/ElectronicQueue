@@ -11,6 +11,7 @@ type UserRepository interface {
 	AddUser(user models.User) error
 	GetUser(id int) (models.User, error)
 	GetUserIdByPhone(phone string) int
+	UpdateUserRepo(user models.User, userId int) error
 }
 
 type UserRepositoryImpl struct {
@@ -80,11 +81,27 @@ func (u *UserRepositoryImpl) GetUser(id int) (models.User, error) {
 func (u *UserRepositoryImpl) GetUserIdByPhone(phone string) int {
 	var id int
 
-	u.db.QueryRow(`
+	err := u.db.QueryRow(`
 		SELECT id
 		FROM "user"
 		WHERE number_phone = $1
 	`, phone).Scan(&id)
 
+	if err != nil {
+		slog.Error(err.Error())
+
+		return 0
+	}
+
 	return id
+}
+
+func (u *UserRepositoryImpl) UpdateUserRepo(user models.User, userId int) error {
+	_, err := u.db.Exec(`
+		UPDATE "user"
+		SET first_name = $1, last_name = $2, number_phone = $3
+		WHERE id = $4
+	`, user.FirstName, user.LastName, user.NumberPhone, userId)
+
+	return err
 }

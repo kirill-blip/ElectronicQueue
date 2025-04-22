@@ -29,16 +29,19 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 	mux.HandleFunc("POST /api/admin/logout", adminHandler.LogOutAdmin)
 	mux.HandleFunc("POST /api/refresh", adminHandler.Refresh)
 	mux.HandleFunc("GET /api/admin/get", middleware.AdminAuthMiddleware(adminHandler.GetAdminDesktop))
+	mux.HandleFunc("POST /api/entry/get-admin", adminHandler.GetAdmin)
 
 	mux.HandleFunc("POST /api/user/add", userHandler.AddUser)
 	mux.HandleFunc("GET /api/user/get", middleware.UserMiddleware(userHandler.GetUser))
+	mux.HandleFunc("GET /api/user/update", middleware.UserMiddleware(userHandler.UpdateUser))
 
-	//mux.HandleFunc("POST /api/entry/generate", middleware.UserMiddleware(entryHandler.GenerateEntry))
+	mux.HandleFunc("POST /api/entry/generate", middleware.UserMiddleware(func(writer http.ResponseWriter, request *http.Request) {
+	}))
 	mux.HandleFunc("POST /api/entry/create", entryHandler.AddEntry)
 	mux.HandleFunc("GET /api/entry/get", middleware.UserMiddleware(entryHandler.GetEntry))
 	mux.HandleFunc("GET /api/entry/get-last-entry", entryHandler.GetLastEntryNumber)
 	mux.HandleFunc("GET /api/entry/get-entry", middleware.AdminAuthMiddleware(entryHandler.GetUser))
-	mux.HandleFunc("POST /api/entry/get-admin", adminHandler.GetAdmin)
+	mux.HandleFunc("GET /api/entry/get-count", middleware.AdminAuthMiddleware(entryHandler.GetCountEntryHandler))
 
 	return mux, nil
 }

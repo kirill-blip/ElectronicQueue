@@ -10,6 +10,7 @@ import (
 type UserService interface {
 	AddUser(user models.User) (int, error)
 	GetUser(id int) (models.User, error)
+	UpdateUserService(user models.User, userId int) error
 }
 
 type UserServiceImpl struct {
@@ -52,4 +53,22 @@ func (u *UserServiceImpl) GetUser(id int) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (u *UserServiceImpl) UpdateUserService(user models.User, userId int) error {
+	if !utils.LastFirstNameValid(user.FirstName) {
+		return apperrors.InvalidFirstName
+	}
+
+	if !utils.LastFirstNameValid(user.LastName) {
+		return apperrors.InvalidLastName
+	}
+
+	if !utils.ValidateKazakhstanPhone(user.NumberPhone) {
+		return apperrors.InvalidPhone
+	}
+
+	err := u.userRepository.UpdateUserRepo(user, userId)
+
+	return err
 }

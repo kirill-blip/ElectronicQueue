@@ -7,13 +7,15 @@ import (
 	"backend/models"
 )
 
-var ticket int = 0
+var ticket int = 1
 
 type EntryService interface {
 	GenerateEntry(user models.User) (int, error)
+	GenerateEntryRepeat(userId int) (int, error)
 	GetLastEntry() (int, error)
 	GetEntry(id int) (models.Entry, error)
 	GetUserService(adminId int) (models.GetEntry, error)
+	GetCountEntryService() (int, error)
 }
 
 type EntryServiceImpl struct {
@@ -53,17 +55,38 @@ func (e *EntryServiceImpl) GenerateEntry(user models.User) (int, error) {
 		return 0, apperrors.InvalidPhone
 	}
 
-	ticket++
-
 	user.Ticket = ticket
 
 	userId, err := e.entryRepository.AddEntry(user)
 	if err != nil {
-		ticket--
 		return 0, err
 	}
 
+	ticket++
+
 	return userId, nil
+}
+
+func (e *EntryServiceImpl) GenerateEntryRepeat(userId int) (int, error) {
+	if _, err := e.entryRepository.GetEntry(userId); err != apperrors.UserNotFound && err != nil {
+		return 0, apperrors.EntryExists
+	}
+
+	var entry models.Entry
+
+	entry.UserId = userId
+	entry.TicketNumber = ticket
+
+	err := e.entryRepository.GenerateEntryRepo(entry)
+
+	if err != nil {
+		return 0, err
+	}
+
+	ticket++
+
+	return ticket, nil
+
 }
 
 func (e *EntryServiceImpl) GetLastEntry() (int, error) {
@@ -83,4 +106,8 @@ func (e *EntryServiceImpl) GetUserService(adminId int) (models.GetEntry, error) 
 	}
 
 	return entry, nil
+}
+
+func (e *EntryServiceImpl) GetCountEntryService() (int, error) {
+	return e.entryRepository.GetCountEntry()
 }

@@ -9,9 +9,11 @@ import (
 
 type EntryRepository interface {
 	AddEntry(user models.User) (int, error)
+	GenerateEntryRepo(entry models.Entry) error
 	GetEntry(int) (models.Entry, error)
 	GetLastEntry() (int, error)
 	GetUserRepo(adminId int) (models.GetEntry, error)
+	GetCountEntry() (int, error)
 }
 
 type EntryRepositoryImpl struct {
@@ -30,6 +32,8 @@ func (e *EntryRepositoryImpl) GetEntry(id int) (models.Entry, error) {
         SELECT *
         FROM "entry"
         WHERE user_id = $1
+        AND status = 'Waiting'
+        AND date::date = CURRENT_DATE;
     `, id).Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &adminId, &entry.Date, &entry.Status)
 
 	if err == sql.ErrNoRows {
@@ -80,6 +84,15 @@ func (e *EntryRepositoryImpl) AddEntry(user models.User) (int, error) {
 		return 0, err
 	}
 	return userId, nil
+}
+
+func (e *EntryRepositoryImpl) GenerateEntryRepo(entry models.Entry) error {
+	_, err := e.db.Exec(`
+		INSERT INTO entry (ticket_number, user_id, status)
+		VALUES ($1, $2, 'Waiting')
+`, entry.TicketNumber, entry.UserId)
+
+	return err
 }
 
 func (e *EntryRepositoryImpl) GetLastEntry() (int, error) {
@@ -136,7 +149,10 @@ func (e *EntryRepositoryImpl) GetUserRepo(adminId int) (models.GetEntry, error) 
 		AND date::date = CURRENT_DATE;
 	`).Scan(&entryId, &userId)
 
-	if err != nil {
+	if err == sql.ErrNoRows {
+		tx.Rollback()
+		return models.GetEntry{}, apperrors.NoUser
+	} else if err != nil {
 		tx.Rollback()
 		return models.GetEntry{}, err
 	}
@@ -173,4 +189,21 @@ func (e *EntryRepositoryImpl) GetUserRepo(adminId int) (models.GetEntry, error) 
 	}
 
 	return entry, nil
+}
+
+func (e *EntryRepositoryImpl) GetCountEntry() (int, error) {
+	var count int
+
+	err := e.db.QueryRow(`
+		SELECT COUNT(*) 
+		FROM entry
+		WHERE status = 'Waiting'
+		AND date::date = CURRENT_DATE;
+`).Scan(&count)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
