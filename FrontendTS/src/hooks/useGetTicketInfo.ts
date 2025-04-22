@@ -9,6 +9,8 @@ const fetchTicketData = async () => {
         credentials: "include",
     });
 
+    console.log("Response: ", response)
+
     if (!response.ok) {
         throw new Error("Failed to fetch ticket info");
     }
@@ -68,21 +70,24 @@ export const useGetTicketInfo = (refreshKey: number) => {
     useEffect(() => {
         async function fetchTicketInfo() {
             try {
+                const userResponse = await fetchUserInfo();
+                setUser({
+                    FirstName: userResponse.first_name,
+                    LastName: userResponse.last_name,
+                    PhoneNumber: userResponse.number_phone,
+                });
+
+                console.log("User Response: ", userResponse)
+
                 const ticketResponse = await fetchTicketData();
+
+                console.log("Ticket Response: ", ticketResponse)
 
                 setTicketData({
                     UserId: ticketResponse.user_id,
                     AdminId: ticketResponse.admin_id,
                     TicketNumber: ticketResponse.ticket_number,
                     EntryStatus: EntryStatus[ticketResponse.status as keyof typeof EntryStatus],
-                });
-
-                
-                const userResponse = await fetchUserInfo();
-                setUser({
-                    FirstName: userResponse.first_name,
-                    LastName: userResponse.last_name,
-                    PhoneNumber: userResponse.number_phone,
                 });
 
                 const adminResponse = await fetchAdminInfo(ticketResponse.admin_id);

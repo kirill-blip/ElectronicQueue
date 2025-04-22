@@ -51,8 +51,10 @@ function HeaderFooterManager({
       location.pathname === "/admin-panel" ||
       location.pathname === "/login"
     ) {
+      document.title = "Панель администратора";
       setHeaderTitle("Панель администратора");
     } else {
+      document.title = "Электронная очередь";
       setHeaderTitle("Электронная очередь");
     }
 

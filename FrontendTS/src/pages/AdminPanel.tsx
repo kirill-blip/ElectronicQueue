@@ -12,13 +12,18 @@ import { useAdmin } from "../hooks/useGetAdmin";
 import { EntryInfo } from "../models/Entry";
 
 function AdminPanel() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
   const [showCountEntriesModal, setShowCountEntriesModal] = useState(false);
 
   const { admin, error, loading } = useAdmin();
 
   const handleCloseAdminModal = () => setShowAddAdminModal(false);
-  const handleShowAdminModal = () => setShowAddAdminModal(true);
+  const handleShowAdminModal = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+    setShowAddAdminModal(true)
+  };
 
   const handleCloseCountEntriesModal = () => setShowCountEntriesModal(false);
   const handleShowCountEntriesModal = () => setShowCountEntriesModal(true);
@@ -206,6 +211,7 @@ function AdminPanel() {
           <CountEntriesModal
             show={showCountEntriesModal}
             handleClose={handleCloseCountEntriesModal}
+            refreshedCount={refreshKey}
           />
         </Container>
       )}

@@ -1,9 +1,5 @@
 import User from "../models/User";
 
-function isObject(value: any): boolean {
-    return typeof value === 'object' && value !== null;
-}
-
 const createTicket = async (user: User) => {
     const response = await fetch("http://localhost:8080/api/entry/create", {
         method: "POST",

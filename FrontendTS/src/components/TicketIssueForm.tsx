@@ -2,7 +2,7 @@ import { Alert, Button, Card, Form } from "react-bootstrap";
 import User from "../models/User";
 import { PhoneInput } from "react-international-phone";
 
-interface TicketIssueFormProps {
+export interface TicketIssueFormProps {
   user: User;
   errorMessage: string;
   handleSumbit: (e: React.FormEvent) => Promise<void>;

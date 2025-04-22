@@ -8,12 +8,14 @@ interface TicketIssueInfoProps {
   fetchedTicketData: Entry;
   fetchedUser: User;
   fetchedAdmin: AdminInfo;
+  handleUpdate: () => void;
 }
 
 function TicketIssueInfo({
   fetchedTicketData,
   fetchedAdmin,
   fetchedUser,
+  handleUpdate
 }: TicketIssueInfoProps) {
   return (
     <div className="col-12 col-md-8 col-lg-5">
@@ -39,7 +41,7 @@ function TicketIssueInfo({
           ) : (
             <div>
               <Button variant="danger">Отменить запись</Button>
-              <Button variant="warning ms-2">Обновить талон</Button>
+              <Button variant="warning ms-2" onClick={handleUpdate}>Обновить талон</Button>
             </div>
           )}
         </Card.Body>

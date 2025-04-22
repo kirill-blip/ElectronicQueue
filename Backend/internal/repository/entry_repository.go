@@ -32,7 +32,7 @@ func (e *EntryRepositoryImpl) GetEntry(id int) (models.Entry, error) {
         SELECT *
         FROM "entry"
         WHERE user_id = $1
-        AND status = 'Waiting'
+		AND status IN ('Waiting', 'Processing')
         AND date::date = CURRENT_DATE;
     `, id).Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &adminId, &entry.Date, &entry.Status)
 

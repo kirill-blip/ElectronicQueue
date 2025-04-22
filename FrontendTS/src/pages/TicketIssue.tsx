@@ -10,10 +10,13 @@ import TicketIssueForm from "../components/TicketIssueForm";
 import TicketIssueInfo from "../components/TicketIssueInfo";
 import { EntryStatus } from "../models/Entry";
 import TicketIssueRecreate from "../components/TicketIssueRecreate";
+import UpdateTicketInfoModal from "../components/UpdateTicketInfoModal";
 
 function TicketIssue() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   const [user, setUser] = useState<User>({
     FirstName: "",
@@ -43,6 +46,11 @@ function TicketIssue() {
     try {
       await issueTicket(user, setErrorMessage);
       setRefreshKey((prevKey) => prevKey + 1);
+      setUser({
+        FirstName: "",
+        LastName: "",
+        PhoneNumber: "",
+      });
     } catch (error) {
       console.error(error);
       setErrorMessage("Произошла ошибка при получении талона.");
@@ -70,35 +78,54 @@ function TicketIssue() {
     return <Loading />;
   }
 
-  console.log(fetchedTicketData.EntryStatus);
+  const handleUpdate = () => {
+    setShowUpdateModal(true);
+  };
+
+  console.log("Fetched Ticket Data: ", fetchedTicketData.EntryStatus);
 
   return (
     <div
       className="container d-flex justify-content-center align-items-center"
       style={{ minHeight: "calc(95vh - 56px - 56px)" }}
     >
-      {fetchedTicketData.EntryStatus === EntryStatus.None && (
-        <TicketIssueForm
-          user={user}
-          handleSumbit={handleSumbit}
-          handleInputChange={handleInputChange}
-          handlePhoneChange={handlePhoneChange}
-          errorMessage={errorMessage}
-        />
-      )}
-      {(fetchedTicketData.EntryStatus === EntryStatus.Waiting ||
-        fetchedTicketData.EntryStatus === EntryStatus.Processing) && (
-          <TicketIssueInfo
-            fetchedTicketData={fetchedTicketData}
-            fetchedAdmin={fetchedAdmin}
-            fetchedUser={fetchedUser}
+      {fetchedTicketData.EntryStatus === EntryStatus.None &&
+        fetchedUser.FirstName === "" && (
+          <TicketIssueForm
+            user={user}
+            handleSumbit={handleSumbit}
+            handleInputChange={handleInputChange}
+            handlePhoneChange={handlePhoneChange}
+            errorMessage={errorMessage}
           />
         )}
-      {fetchedTicketData.EntryStatus !== EntryStatus.None &&
-      fetchedTicketData.EntryStatus !== EntryStatus.Waiting &&
-      fetchedTicketData.EntryStatus !== EntryStatus.Processing && (
-          <TicketIssueRecreate user={fetchedUser} />
+      {(fetchedTicketData.EntryStatus === EntryStatus.Waiting ||
+        fetchedTicketData.EntryStatus === EntryStatus.Processing) && (
+        <TicketIssueInfo
+          fetchedTicketData={fetchedTicketData}
+          fetchedAdmin={fetchedAdmin}
+          fetchedUser={fetchedUser}
+          handleUpdate={handleUpdate}
+        />
+      )}
+      {fetchedUser.FirstName !== "" &&
+        fetchedTicketData.EntryStatus !== EntryStatus.Waiting &&
+        fetchedTicketData.EntryStatus !== EntryStatus.Processing && (
+          <TicketIssueRecreate
+            user={fetchedUser}
+            handleUpdate={handleUpdate}
+            setRefreshKey={setRefreshKey}
+          />
         )}
+
+      {showUpdateModal && (
+        <UpdateTicketInfoModal
+          show={showUpdateModal}
+          handleClose={() => setShowUpdateModal(false)}
+          initialUser={fetchedUser}
+          setRefreshKey={setRefreshKey}
+        />
+      )}
     </div>
   );
 }
