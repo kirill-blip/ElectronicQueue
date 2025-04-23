@@ -51,7 +51,65 @@
     "greeting": "Добро пожаловать, абитуриент!",
     "greeting1": "Получите талон на посещение"
   },
+  "login": {
+    "first-name": "Имя",
+    "last-name": "Фамилия",
+    "login": "Логин",
+    "password": "Пароль"
+  },
+  "ticket-issue": {
+    "getting-ticket": "Получение талона",
+    "update-client-info": "Обновить данные",
+    "ticket": "Талон",
+    "name": "Имя",
+    "new-ticket": "Выдача нового талона",
+    "phone-number": "Номер телефона",
+    "ticket-number": "Пожалуйста, подойдите к столику"
+  },
+  "queue":{
+    "ticket": "Талон",
+    "table-number": "Стол"
+  },
+  "admin-panel": {
+    "admin-info-title": "Информация о администраторе",
+    "name": "Имя",
+    "table-number": "Номер стола",
+    "client-info-title": "Информация о клиенте",
+    "client-name": "Имя клиента",
+    "client-phone": "Номер телефона",
+    "client-ticket": "Талон",
+    "no-clients": "Клиентов больше нет",
+    "functions": "Функции",
+    "add-admin": "Добавление администратора",
+    "clients-count": "Количество клиентов",
+    "clients-0-count": "Ожидающих клиентов нет"
+  },
   "buttons": {
-    "get-ticket": "Получить талон"
+    "get-ticket": "Получить талон",
+    "call-client": "Вызвать клиента",
+    "cancel-client": "Отклонить",
+    "accept-client": "Принять",
+    "cancel-update-client-info": "Отмена",
+    "update-clinte-info": "Обновить",
+    "add-admin": "Добавить администратора",
+    "count-clients": "Количество клиентов",
+    "logout": "Выйти",
+    "login": "Войти",
+    "close": "Закрыть",
+    "add": "Добавить",
+    "cancel-client-ticket": "Отменить запись",
+    "update-client-info": "Изменить данные",
+    "return-to-main": "Вернуться на главную",
+    "to-login": "Перейти на страницу входа"
+  },
+  "errors": {
+    "no-permission": "Нет доступа",
+    "unauthorized": "У вас нет прав для доступа к этой странице.",
+    "not-found": "Страница не найдена",
+    "phone-number-error": "Пользователь с таким номером телефона уже существует.",
+    "invalid-phone-number-error": "Номер телефона должен быть только казахским.",
+    "first-name-error": "Имя должно быть из букв русского или казахского алфавитов.",
+    "last-name-error": "Фамилия должна быть из букв русского или казахского алфавитов.",
+    "ticket-issue-error": "Произошла ошибка при получении талона."
   }
 }

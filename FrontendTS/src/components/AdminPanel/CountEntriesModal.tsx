@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Button, Modal } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 interface CountEntriesModalProps {
   show: boolean;
@@ -13,6 +14,7 @@ function CountEntriesModal({
   refreshedCount,
 }: CountEntriesModalProps) {
   const [count, setCount] = useState<number>(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -44,20 +46,20 @@ function CountEntriesModal({
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Количество клиентов</Modal.Title>
+        <Modal.Title>{t('admin-panel.clients-count')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {count !== 0 ? (
-          <p className="mb-0">Количество клиентов: {count}</p>
+          <p className="mb-0">{t('admin-panel.clients-count')}: {count}</p>
         ) : (
           <Alert variant="danger" className="mb-0">
-            Ожидающих клиентов нет
+            {t('admin-panel.clients-0-count')}
           </Alert>
         )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>
-          Закрыть
+          {t('buttons.close')}
         </Button>
       </Modal.Footer>
     </Modal>

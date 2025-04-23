@@ -51,7 +51,66 @@
     "greeting": "Welcome, applicant!",
     "greeting1": "Get a ticket for a visit"
   },
+  "login": {
+    "login": "Login",
+    "password": "Password",
+    "first-name": "First Name",
+    "last-name": "Last Name"
+  },
+  "ticket-issue": {
+    "getting-ticket": "Ticket Issuance",
+    "update-client-info": "Update client information",
+    "ticket": "Ticket",
+    "new-ticket": "Issue New Ticket",
+    "name": "Name",
+    "phone-number": "Phone Number",
+    "ticket-number": "Please proceed to the desk"
+  },
+  "admin-panel": {
+    "admin-info-title": "Administrator information",
+    "name": "Name",
+    "table-number": "Table number",
+    "client-info-title": "Client Information",
+    "client-name": "Client Name",
+    "client-phone": "Phone Number",
+    "client-ticket": "Ticket",
+    "no-clients": "No more clients",
+    "functions": "Functions",
+    "add-admin": "Adding an administrator",
+    "clients-count": "Number of Clients",
+    "clients-0-count": "No clients waiting",
+    "ticket-number": "Please proceed to the desk"
+  },
+  "queue":{
+    "ticket": "Ticket",
+    "table-number": "Table number"
+  },
   "buttons": {
-    "get-ticket": "Get a ticket"
+    "get-ticket": "Get a ticket",
+    "call-client": "Call Client",
+    "cancel-update-client-info": "Cancel",
+    "update-clinte-info": "Update",
+    "cancel-client": "Cancel",
+    "accept-client": "Accept",
+    "add-admin": "Add Administrator",
+    "count-clients": "Number of Clients",
+    "logout": "Logout",
+    "login": "Login",
+    "close": "Close",
+    "add": "Add",
+    "cancel-client-ticket": "Cancel appointment",
+    "update-client-info": "Update information",
+    "return-to-main": "Return to main",
+    "to-login": "Go to login page"
+  },
+  "errors": {
+    "no-permission": "No access",
+    "unauthorized": "You do not have permission to access this page.",
+    "not-found": "Page not found",
+    "phone-number-error": "A user with this phone number already exists.",
+    "invalid-phone-number-error": "The phone number must be Kazakh only.",
+    "first-name-error": "The first name must consist of letters from the Russian or Kazakh alphabets.",
+    "last-name-error": "The last name must consist of letters from the Russian or Kazakh alphabets.",
+    "ticket-issue-error": "An error occurred while issuing the ticket."
   }
 }

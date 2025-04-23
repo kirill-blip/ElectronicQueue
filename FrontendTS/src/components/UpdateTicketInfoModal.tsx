@@ -3,6 +3,7 @@ import TicketIssueForm, { TicketIssueFormProps } from "./TicketIssueForm";
 import { PhoneInput } from "react-international-phone";
 import User from "../models/User";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface UpdateTicketInfoModalProps {
   show: boolean;
@@ -17,6 +18,8 @@ function UpdateTicketInfoModal({
   handleClose,
   setRefreshKey,
 }: UpdateTicketInfoModalProps) {
+  const { t } = useTranslation();
+
   const [user, setUser] = useState<User>(initialUser);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -62,13 +65,13 @@ function UpdateTicketInfoModal({
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Обновление данных</Modal.Title>
+        <Modal.Title>{t('ticket-issue.update-client-info')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {errorMessage && <div className="text-danger mb-3">{errorMessage}</div>}
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Имя</Form.Label>
+            <Form.Label>{t('login.first-name')}</Form.Label>
             <Form.Control
               type="text"
               name="FirstName"
@@ -78,7 +81,7 @@ function UpdateTicketInfoModal({
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Фамилия</Form.Label>
+            <Form.Label>{t('login.last-name')}</Form.Label>
             <Form.Control
               name="LastName"
               value={user.LastName}
@@ -87,7 +90,7 @@ function UpdateTicketInfoModal({
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Номер телефона</Form.Label>
+            <Form.Label>{t('ticket-issue.phone-number')}</Form.Label>
             <PhoneInput
               inputStyle={{ width: "100%" }}
               defaultCountry="kz"
@@ -97,10 +100,10 @@ function UpdateTicketInfoModal({
             />
           </Form.Group>
           <Button variant="primary" type="submit">
-            Обновить
+          {t('buttons.update-client-info')}
           </Button>
           <Button variant="secondary" className="ms-2" onClick={handleClose}>
-            Отмена
+            {t('buttons.cancel-update-client-info')}
           </Button>
         </Form>
       </Modal.Body>
