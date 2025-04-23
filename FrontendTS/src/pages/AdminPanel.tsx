@@ -9,7 +9,7 @@ import AddAdminModal from "../components/AdminPanel/AddAdminModal";
 import CountEntriesModal from "../components/AdminPanel/CountEntriesModal";
 import { useLogout } from "../hooks/useLogout";
 import { useAdmin } from "../hooks/useGetAdmin";
-import { EntryInfo } from "../models/Entry";
+import { EntryInfo, EntryStatus } from "../models/Entry";
 
 function AdminPanel() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -22,7 +22,7 @@ function AdminPanel() {
   const handleCloseAdminModal = () => setShowAddAdminModal(false);
   const handleShowAdminModal = () => {
     setRefreshKey((prevKey) => prevKey + 1);
-    setShowAddAdminModal(true)
+    setShowAddAdminModal(true);
   };
 
   const handleCloseCountEntriesModal = () => setShowCountEntriesModal(false);
@@ -74,9 +74,33 @@ function AdminPanel() {
     }
   };
 
-  const handleAcceptClient = () => {
+  const handleAcceptClient = async () => {
     localStorage.removeItem("Entry");
-    setHasClient(false);
+
+    const status = 'accept';
+
+    console.log(status)
+    console.log(entry.EntryId);
+
+    const response = await fetch(`http://localhost:8080/api/entry/${status}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        entry_id: entry.EntryId,
+      }),
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Client accepted:", data);
+      setHasClient(false);
+    } else {
+      const errorData = await response.json();
+      console.error("Error accepting client:", errorData);
+    }
   };
 
   const handleRejectClient = () => {

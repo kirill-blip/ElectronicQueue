@@ -214,7 +214,7 @@ func (e *EntryRepositoryImpl) ChangeStatusRepo(entryId int, status string) error
 		UPDATE entry
 		SET status = $1
 		WHERE id = $2
-`, status, entryId)
+	`, status, entryId)
 
 	return err
 }

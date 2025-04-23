@@ -175,7 +175,7 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 
 	body := r.PathValue("status")
 
-	if body != "accept" || body != "cancel" {
+	if body != "accept" && body != "cancel" {
 		utils.ErrorInJSON(w, 401, apperrors.InvalidStatus)
 		return
 	}
