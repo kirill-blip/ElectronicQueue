@@ -1,5 +1,5 @@
 import "../styles/AdminPanel.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Container } from "react-bootstrap";
 import Unauthorized from "../components/Unauthorized";
@@ -9,7 +9,8 @@ import AddAdminModal from "../components/AdminPanel/AddAdminModal";
 import CountEntriesModal from "../components/AdminPanel/CountEntriesModal";
 import { useLogout } from "../hooks/useLogout";
 import { useAdmin } from "../hooks/useGetAdmin";
-import { EntryInfo, EntryStatus } from "../models/Entry";
+import { EntryInfo } from "../models/Entry";
+import { convertTicketNumber } from "../utils/converters";
 
 function AdminPanel() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -53,7 +54,6 @@ function AdminPanel() {
 
     if (response.ok) {
       const data = await response.json();
-
       setUser({
         EntryId: data.entry_id,
         UserId: data.user_id,
@@ -153,6 +153,9 @@ function AdminPanel() {
                   <Card>
                     <Card.Header as="h5">Информация о клиенте</Card.Header>
                     <Card.Body>
+                      <Card.Text className="mb-0">
+                        <strong>Талон №{convertTicketNumber(entry.EntryId)}</strong>
+                      </Card.Text>
                       <Card.Text className="mb-0">
                         Имя клиента: {entry.User.FirstName}{" "}
                         {entry.User.LastName}
