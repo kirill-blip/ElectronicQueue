@@ -176,8 +176,8 @@ func (e *EntryRepositoryImpl) GetUserRepo(adminId int) (models.GetEntry, error) 
 		FROM "entry" e
 		JOIN "user" u 
 		    ON e.user_id = u.id
-		WHERE e.user_id = $1
-`, userId).Scan(&entry.EntryId, &entry.UserId, &entry.FirstName, &entry.LastName, &entry.NumberPhone)
+		WHERE e.id = $1
+`, entryId).Scan(&entry.EntryId, &entry.UserId, &entry.FirstName, &entry.LastName, &entry.NumberPhone)
 
 	if err != nil {
 		tx.Rollback()
