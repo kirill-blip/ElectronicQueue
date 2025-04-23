@@ -110,6 +110,9 @@ func (e *EntryServiceImpl) GetLastEntry() (int, error) {
 }
 
 func (e *EntryServiceImpl) GetUserService(adminId int) (models.GetEntry, error) {
+	Mu.Lock()
+	defer Mu.Unlock()
+
 	entry, err := e.entryRepository.GetUserRepo(adminId)
 	if err != nil {
 		return models.GetEntry{}, err
