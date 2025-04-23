@@ -5,9 +5,13 @@ import (
 	"backend/internal/repository"
 	"backend/internal/utils"
 	"backend/models"
+	"sync"
 )
 
-var ticket int = 1
+var (
+	ticket int = 1
+	Mu     sync.Mutex
+)
 
 type EntryService interface {
 	GenerateEntry(user models.User) (int, error)
@@ -57,6 +61,9 @@ func (e *EntryServiceImpl) GenerateEntry(user models.User) (int, error) {
 
 	user.Ticket = ticket
 
+	Mu.Lock()
+	defer Mu.Unlock()
+
 	userId, err := e.entryRepository.AddEntry(user)
 	if err != nil {
 		return 0, err
@@ -77,6 +84,9 @@ func (e *EntryServiceImpl) GenerateEntryRepeat(userId int) (int, error) {
 	entry.UserId = userId
 	entry.TicketNumber = ticket
 
+	Mu.Lock()
+	defer Mu.Unlock()
+
 	err := e.entryRepository.GenerateEntryRepo(entry)
 
 	if err != nil {
@@ -86,7 +96,6 @@ func (e *EntryServiceImpl) GenerateEntryRepeat(userId int) (int, error) {
 	ticket++
 
 	return ticket, nil
-
 }
 
 func (e *EntryServiceImpl) GetLastEntry() (int, error) {

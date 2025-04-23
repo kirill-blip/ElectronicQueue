@@ -34,6 +34,9 @@ func (u *UserServiceImpl) AddUser(user models.User) (int, error) {
 		return 0, apperrors.InvalidPhone
 	}
 
+	Mu.Lock()
+	defer Mu.Unlock()
+
 	err := u.userRepository.AddUser(user)
 
 	if err != nil {
@@ -67,6 +70,9 @@ func (u *UserServiceImpl) UpdateUserService(user models.User, userId int) error 
 	if !utils.ValidateKazakhstanPhone(user.NumberPhone) {
 		return apperrors.InvalidPhone
 	}
+
+	Mu.Lock()
+	defer Mu.Unlock()
 
 	err := u.userRepository.UpdateUserRepo(user, userId)
 

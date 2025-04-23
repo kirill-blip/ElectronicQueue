@@ -34,6 +34,9 @@ func (s *AdminServiceImpl) GetAdmin(id int) (models.AdminPanel, error) {
 }
 
 func (s *AdminServiceImpl) RegisterAdmin(admin models.Admin) error {
+	Mu.Lock()
+	defer Mu.Unlock()
+
 	if err := utils.LoginValid(admin.Login); err != nil {
 		return err
 	}
@@ -94,6 +97,9 @@ func (s *AdminServiceImpl) Login(login, password string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+
+	Mu.Lock()
+	defer Mu.Unlock()
 
 	if exists := utils.CheckPasswordHash(password, admin.Password); !exists {
 		return 0, apperrors.LogInWrongPassword
