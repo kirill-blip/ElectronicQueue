@@ -175,7 +175,7 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 
 	body := r.PathValue("status")
 
-	if body != "accept" && body != "cancel" {
+	if body != "accept" && body != "cancel" && body != "cancelbyuser" {
 		utils.ErrorInJSON(w, 401, apperrors.InvalidStatus)
 		return
 	}
@@ -191,7 +191,7 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var entry struct {
-		id int `json:"entry_id"`
+		ID int `json:"entry_id"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&entry)
@@ -204,7 +204,7 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = e.entryService.ChangeStatusService(entry.id, status)
+	err = e.entryService.ChangeStatusService(entry.ID, status)
 
 	if err != nil {
 		slog.Warn(err.Error())
