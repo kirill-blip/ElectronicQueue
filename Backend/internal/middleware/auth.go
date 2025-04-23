@@ -78,3 +78,31 @@ func UserMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
+
+func UserOrAdminMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var ctx = r.Context()
+		var hasAccess bool
+
+		if cookie, err := r.Cookie("admin_id"); err == nil {
+			if adminID, err := strconv.Atoi(cookie.Value); err == nil {
+				ctx = context.WithValue(ctx, "admin_id", adminID)
+				hasAccess = true
+			}
+		}
+
+		if cookie, err := r.Cookie("user"); err == nil {
+			if userID, err := strconv.Atoi(cookie.Value); err == nil {
+				ctx = context.WithValue(ctx, "user", userID)
+				hasAccess = true
+			}
+		}
+
+		if !hasAccess {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+}

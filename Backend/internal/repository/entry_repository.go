@@ -14,6 +14,7 @@ type EntryRepository interface {
 	GetLastEntry() (int, error)
 	GetUserRepo(adminId int) (models.GetEntry, error)
 	GetCountEntry() (int, error)
+	ChangeStatusRepo(entryId int, status string) error
 }
 
 type EntryRepositoryImpl struct {
@@ -206,4 +207,14 @@ func (e *EntryRepositoryImpl) GetCountEntry() (int, error) {
 	}
 
 	return count, nil
+}
+
+func (e *EntryRepositoryImpl) ChangeStatusRepo(entryId int, status string) error {
+	_, err := e.db.Exec(`
+		UPDATE entry
+		SET status = $1
+		WHERE id = $2
+`, status, entryId)
+
+	return err
 }

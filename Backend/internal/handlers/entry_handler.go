@@ -169,3 +169,51 @@ func (e *EntryHandler) GetCountEntryHandler(w http.ResponseWriter, r *http.Reque
 
 	utils.ResponseInJSON(w, http.StatusOK, map[string]int{"count": count})
 }
+
+func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	body := r.PathValue("status")
+
+	if body != "accept" || body != "cancel" {
+		utils.ErrorInJSON(w, 401, apperrors.InvalidStatus)
+		return
+	}
+
+	var status string
+
+	if body == "accept" {
+		status = "Accepted"
+	} else if body == "cancelbyuser" {
+		status = "CanceledByUser"
+	} else {
+		status = "Canceled"
+	}
+
+	var entry struct {
+		id int `json:"entry_id"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&entry)
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	err = e.entryService.ChangeStatusService(entry.id, status)
+
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	utils.ResponseInJSON(w, http.StatusOK, map[string]string{"status": status})
+}

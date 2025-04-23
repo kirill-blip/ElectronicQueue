@@ -26,6 +26,7 @@ var (
 	NoUniqueLogin      = errors.New("login already exist")
 	NoUser             = errors.New("no user")
 	EntryExists        = errors.New("entry already exists")
+	InvalidStatus      = errors.New("invalid status")
 )
 
 func FindErrorCode(err error) int {
@@ -33,7 +34,7 @@ func FindErrorCode(err error) int {
 		return 400
 	}
 
-	if err == EntryExists || err == NoUniqueTable || err == NoUniqueLogin || err == ContainesData || err == InvalidData || err == InvalidToken || err == InvalidTokenId || err == AdminNotFound || err == LogInWrongPassword || err == LogInWrongLogin {
+	if err == InvalidStatus || err == EntryExists || err == NoUniqueTable || err == NoUniqueLogin || err == ContainesData || err == InvalidData || err == InvalidToken || err == InvalidTokenId || err == AdminNotFound || err == LogInWrongPassword || err == LogInWrongLogin {
 		return 401
 	}
 

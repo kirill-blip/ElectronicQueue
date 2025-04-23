@@ -20,6 +20,7 @@ type EntryService interface {
 	GetEntry(id int) (models.Entry, error)
 	GetUserService(adminId int) (models.GetEntry, error)
 	GetCountEntryService() (int, error)
+	ChangeStatusService(entryId int, status string) error
 }
 
 type EntryServiceImpl struct {
@@ -119,4 +120,8 @@ func (e *EntryServiceImpl) GetUserService(adminId int) (models.GetEntry, error) 
 
 func (e *EntryServiceImpl) GetCountEntryService() (int, error) {
 	return e.entryRepository.GetCountEntry()
+}
+
+func (e *EntryServiceImpl) ChangeStatusService(entryId int, status string) error {
+	return e.entryRepository.ChangeStatusRepo(entryId, status)
 }
