@@ -1,0 +1,57 @@
+{
+  "header": {
+    "client": "Electronic queue",
+    "admin": "Administration panel"
+  },
+  "footer": {
+    "copyright": "All rights reserved",
+    "privacy": "Privacy Policy",
+    "contacts": "Contacts"
+  },
+  "main": {
+    "faq": {
+      "title": "FAQ",
+      "question1": {
+        "question": "What majors are there in college?",
+        "answer": {
+          "first": {
+            "title": "Software",
+            "description": "creating web, mobile and digital applications, working with Python, React, Flutter, databases and Arduino."
+          },
+          "second": {
+            "title": "Computer Science and Information Networks",
+            "description": "setting up and maintaining databases (PostgreSQL, SQL Server), servers and networks, working with Django."
+          }
+        }
+      },
+      "question2": {
+        "title": "What is the duration of the study?",
+        "answer": {
+          "part1": "The duration of the study is",
+          "part2": "2 years and 10 months",
+          "part3": "The study is conducted in full-time mode."
+        }
+      },
+      "question3": {
+        "title": "Tuition fee",
+        "answer": {
+          "price": "1,500,000 tenge",
+          "part1": "The tuition fee is",
+          "part2": "for the entire duration of the study.",
+          "part3": "You can split the payment into 3 installments:",
+          "tranche": {
+            "first": "1st installment 30% by August 25",
+            "second": "2nd installment 35% by the end of the 1st semester",
+            "third": "3rd installment 35% by the end of the 2nd semester"
+          }
+        }
+      }
+    },
+    "gallery": "Gallery",
+    "greeting": "Welcome, applicant!",
+    "greeting1": "Get a ticket for a visit"
+  },
+  "buttons": {
+    "get-ticket": "Get a ticket"
+  }
+}

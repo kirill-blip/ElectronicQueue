@@ -10,6 +10,7 @@ import Queue from "./pages/Queue";
 import { NavbarProps } from "react-bootstrap";
 import MainPage from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
+import { useTranslation } from "react-i18next";
 
 function App() {
   const [headerTitle, setHeaderTitle] = useState("Электронная очередь");
@@ -45,17 +46,20 @@ function HeaderFooterManager({
   setFooterType: (footerType: NavbarProps) => void;
 }) {
   const location = useLocation();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     if (
       location.pathname === "/admin-panel" ||
       location.pathname === "/login"
     ) {
-      document.title = "Панель администратора";
-      setHeaderTitle("Панель администратора");
+      const text = t('header.admin');
+      document.title = text;
+      setHeaderTitle(text);
     } else {
-      document.title = "Электронная очередь";
-      setHeaderTitle("Электронная очередь");
+      const text = t('header.client');
+      document.title = text
+      setHeaderTitle(text);
     }
 
     if (location.pathname === "/") {
