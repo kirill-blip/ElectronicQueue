@@ -2,9 +2,11 @@ import { Accordion, Button, Carousel, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 import "../styles/MainPage.css";
+import { useTranslation } from "react-i18next";
 
 function MainPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleTicketIssue = () => {
     navigate("/ticket-issue");
@@ -13,50 +15,46 @@ function MainPage() {
   return (
     <div>
       <Container className="p-4 mb-4 mt-4 rounded">
-        <h2 className="section-header">Добро пожаловать, абитуриент!</h2>
-        <p className="section-text">Получите талон на посещение</p>
-        <Button onClick={handleTicketIssue}>Получить талон</Button>
+        <h2 className="section-header">{t('main.greeting')}</h2>
+        <p className="section-text">{t('main.greeting1')}</p>
+        <Button onClick={handleTicketIssue}>{t('buttons.get-ticket')}</Button>
       </Container>
       <Container className="p-4 mt-4">
-        <h2 className="section-header mb-2">FAQ</h2>
+        <h2 className="section-header mb-2">{t('main.faq.title')}</h2>
         <Accordion>
           <Accordion.Item eventKey="0">
-            <Accordion.Header>
-              Какие есть специальности в колледже?
-            </Accordion.Header>
+            <Accordion.Header>{t("main.faq.question1.question")}</Accordion.Header>
             <Accordion.Body>
               <p>
-                <strong>Программное обеспечение</strong> — создание веб,
-                мобильных и цифровых приложений, работа с Python, React,
-                Flutter, базами данных и Arduino.
+                <strong>{t("main.faq.question1.answer.first.title")}</strong> —{" "}
+                {t("main.faq.question1.answer.first.description")}
               </p>
               <p>
-                <strong>Вычислительная техника и информационные сети</strong> —
-                настройка и сопровождение баз данных (PostgreSQL, SQL Server),
-                серверов и сетей, работа с Django.
+                <strong>{t("main.faq.question1.answer.second.title")}</strong> —{" "}
+                {t("main.faq.question1.answer.second.description")}
               </p>
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="1">
-            <Accordion.Header>Какой срок обучения?</Accordion.Header>
+            <Accordion.Header>{t('main.faq.question2.title')}</Accordion.Header>
             <Accordion.Body>
-              Срок обучения составляет <strong>2 года и 10 месяцев</strong>.
-              Обучение проходит в очной форме.
+              {t('main.faq.question2.answer.part1')}{" "}
+              <strong>{t('main.faq.question2.answer.part2')}</strong>.{" "}
+              {t('main.faq.question2.answer.part3')}
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="2">
-            <Accordion.Header>Стоимость обучения</Accordion.Header>
+            <Accordion.Header>{t('main.faq.question3.title')}</Accordion.Header>
             <Accordion.Body>
               <p>
-                Стоимость обучения составляет <strong>1 500 000 тенге</strong>{" "}
-                за весь срок обучения.
+                {t('main.faq.question3.answer.part1')} <strong>{t('main.faq.question3.answer.price')}</strong> {t('main.faq.question3.answer.part2')}
               </p>
-              <strong>Вы можете разделить оплату на 3 транша:</strong>
+              <strong>{t('main.faq.question3.answer.part3')}</strong>
               <p>
                 <ul>
-                  <li>1 транш 30% до 25 августа</li>
-                  <li>2 транш 35% до конца 1</li>
-                  <li>семестра 3 транш 35% до конца 2 семестра</li>
+                  <li>{t('main.faq.question3.answer.tranche.first')}</li>
+                  <li>{t('main.faq.question3.answer.tranche.second')}</li>
+                  <li>{t('main.faq.question3.answer.tranche.third')}</li>
                 </ul>
               </p>
             </Accordion.Body>
@@ -64,7 +62,7 @@ function MainPage() {
         </Accordion>
       </Container>
       <Container className="p-4 rounded">
-        <h2 className="section-header mb-2">Галерея</h2>
+        <h2 className="section-header mb-2">{t('main.gallery')}</h2>
         <Carousel fade data-bs-theme="light">
           <Carousel.Item>
             <img

@@ -1,4 +1,5 @@
 import { Container, Navbar, NavbarProps } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 interface FooterProps {
@@ -6,6 +7,8 @@ interface FooterProps {
 }
 
 function Footer({footerType}: FooterProps) {
+  const [t, i18n] = useTranslation();
+
   return (
     <footer className="mt-auto">
       
@@ -16,14 +19,14 @@ function Footer({footerType}: FooterProps) {
         <Container className="d-flex flex-column align-items-center">
           <div>
             <Navbar.Text>
-              &copy; 2025 Astana IT College. Все права защищены.
+              &copy; 2025 Astana IT College. {t('footer.copyright')}.
             </Navbar.Text>
             <div className="me-3">
               <Link to="/policy" className="text-dark-emphasis me-3">
-                Политика конфиденциальности
+                {t('footer.privacy')}
               </Link>
               <Link to="/contacts" className="text-dark-emphasis">
-                Контакты
+                {t('footer.contacts')}
               </Link>
             </div>
           </div>
