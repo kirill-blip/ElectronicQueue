@@ -2,6 +2,7 @@ import { Form } from "react-bootstrap";
 import "../styles/LoginForm.css";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PasswordFormProps {
   password: string;
@@ -10,6 +11,7 @@ interface PasswordFormProps {
 
 function PasswordForm({ password, handleInputChange }: PasswordFormProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { t } = useTranslation();
   
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
@@ -21,6 +23,7 @@ function PasswordForm({ password, handleInputChange }: PasswordFormProps) {
         type={isPasswordVisible ? "text" : "password"}
         id="password-input"
         name="Password"
+        placeholder={t('login.password')}
         value={password}
         onChange={handleInputChange}
       />

@@ -3,6 +3,7 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import PasswordForm from "../PasswordForm";
 import { useState } from "react";
 import { Admin } from "../../models/Admin";
+import { useTranslation } from "react-i18next";
 
 interface AddAdminModalProps {
   show: boolean;
@@ -50,46 +51,48 @@ function AddAdminModal({ show, onHide }: AddAdminModalProps) {
       }
     } catch (error) {}
   };
+  
+  const { t } = useTranslation();
 
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Добавление администратора</Modal.Title>
+        <Modal.Title>{ t('admin-panel.add-admin') }</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>Имя</Form.Label>
+            <Form.Label>{ t('login.first-name') }</Form.Label>
             <Form.Control
               type="text"
               name="FirstName"
-              placeholder="Имя"
+              placeholder={t('login.first-name')}
               value={admin.FirstName}
               onChange={handleInputChange}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Фамилия</Form.Label>
+            <Form.Label>{t('login.first-name')}</Form.Label>
             <Form.Control
               type="text"
               name="LastName"
-              placeholder="Фамилия"
+              placeholder={t('login.last-name')}
               value={admin.LastName}
               onChange={handleInputChange}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Логин</Form.Label>
+            <Form.Label>{t('login.login')}</Form.Label>
             <Form.Control
               type="text"
               name="Login"
-              placeholder="Логин"
+              placeholder={t('login.login')}
               value={admin.Login}
               onChange={handleInputChange}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Пароль</Form.Label>
+            <Form.Label>{t('login.password')}</Form.Label>
             <PasswordForm
               handleInputChange={handleInputChange}
               password={admin.Password}
@@ -102,10 +105,10 @@ function AddAdminModal({ show, onHide }: AddAdminModalProps) {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
-          Закрыть
+          {t('buttons.close')}
         </Button>
         <Button variant="primary" onClick={handleSumbit}>
-          Добавить
+          {t('buttons.add')}
         </Button>
       </Modal.Footer>
     </Modal>

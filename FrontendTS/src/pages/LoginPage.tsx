@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import { Alert, Button, Card } from "react-bootstrap";
 import PasswordForm from "../components/PasswordForm";
+import { useTranslation } from "react-i18next";
 
 type AdminEntity = {
   Login: string;
@@ -17,6 +18,7 @@ function LoginPage() {
   });
 
   const [error, setError] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
 
@@ -85,7 +87,7 @@ function LoginPage() {
         <Card className="p-4 shadow">
           <Form onSubmit={handleSumbit}>
             <Form.Group className="mb-3">
-              <Form.Label>Логин</Form.Label>
+              <Form.Label>{t('login.login')}</Form.Label>
               <Form.Control
                 type="text"
                 name="Login"
@@ -94,11 +96,11 @@ function LoginPage() {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Пароль</Form.Label>
+              <Form.Label>{t('login.password')}</Form.Label>
               <PasswordForm handleInputChange={handleInputChange} password={adminEntity.Password} />
             </Form.Group>
             <Button type="submit" className="w-100">
-              Войти
+              {t('buttons.login')}
             </Button>
           </Form>
           {error && (

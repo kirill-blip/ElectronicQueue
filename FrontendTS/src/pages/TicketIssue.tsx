@@ -46,11 +46,6 @@ function TicketIssue() {
     try {
       await issueTicket(user, setErrorMessage);
       setRefreshKey((prevKey) => prevKey + 1);
-      setUser({
-        FirstName: "",
-        LastName: "",
-        PhoneNumber: "",
-      });
     } catch (error) {
       console.error(error);
       setErrorMessage("Произошла ошибка при получении талона.");

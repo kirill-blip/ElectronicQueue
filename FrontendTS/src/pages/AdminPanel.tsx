@@ -11,6 +11,7 @@ import { useLogout } from "../hooks/useLogout";
 import { useAdmin } from "../hooks/useGetAdmin";
 import { EntryInfo } from "../models/Entry";
 import { convertTicketNumber } from "../utils/converters";
+import { useTranslation } from "react-i18next";
 
 function AdminPanel() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -19,6 +20,8 @@ function AdminPanel() {
   const [showCountEntriesModal, setShowCountEntriesModal] = useState(false);
 
   const { admin, error, loading } = useAdmin();
+
+  const { t } = useTranslation()
 
   const handleCloseAdminModal = () => setShowAddAdminModal(false);
   const handleShowAdminModal = () => {
@@ -151,30 +154,30 @@ function AdminPanel() {
               {hasClient ? (
                 <Container>
                   <Card>
-                    <Card.Header as="h5">Информация о клиенте</Card.Header>
+                    <Card.Header as="h5">{t('admin-panel.client-info-title')}</Card.Header>
                     <Card.Body>
                       <Card.Text className="mb-0">
-                        <strong>Талон №{convertTicketNumber(entry.EntryId)}</strong>
+                        <strong>{t('admin-panel.client-ticket')} №{convertTicketNumber(entry.EntryId)}</strong>
                       </Card.Text>
                       <Card.Text className="mb-0">
-                        Имя клиента: {entry.User.FirstName}{" "}
+                        {t('admin-panel.client-name')}: {entry.User.FirstName}{" "}
                         {entry.User.LastName}
                       </Card.Text>
                       <Card.Text>
-                        Номер телефона: {entry.User.PhoneNumber}
+                        {t('admin-panel.client-phone')}: {entry.User.PhoneNumber}
                       </Card.Text>
 
                       <Button
                         className="primary me-2"
                         onClick={handleRejectClient}
                       >
-                        Отклонить
+                        {t('buttons.cancel-client')}
                       </Button>
                       <Button
                         className="primary me-2"
                         onClick={handleAcceptClient}
-                      >
-                        Принять
+                        >
+                        {t('buttons.accept-client')}
                       </Button>
                     </Card.Body>
                   </Card>
@@ -189,33 +192,33 @@ function AdminPanel() {
             <div className="col-4 mt-2">
               <Container>
                 <Card>
-                  <Card.Header as="h5">Информация о администраторе</Card.Header>
+                  <Card.Header as="h5">{t('admin-panel.admin-info-title')}</Card.Header>
                   <Card.Body>
                     <Card.Text as="h5">
-                      Имя: {admin?.FirstName} {admin?.LastName}
+                      {t('admin-panel.name')}: {admin?.FirstName} {admin?.LastName}
                     </Card.Text>
                     <Card.Text as="h5">
-                      Стол номер: {admin?.TableNumber}
+                      {t('admin-panel.table-number')}: {admin?.TableNumber}
                     </Card.Text>
                     <Button
                       variant="danger"
                       className="mt-2"
                       onClick={handleLogout}
                     >
-                      Выйти
+                      {t('buttons.logout')}
                     </Button>
                   </Card.Body>
                 </Card>
 
                 <Card className="mt-2">
-                  <Card.Header as="h5">Функции</Card.Header>
+                  <Card.Header as="h5">{t('admin-panel.functions')}</Card.Header>
                   <Card.Body>
                     <Button
                       style={{ width: "100%" }}
                       variant="primary"
                       onClick={handleShowAdminModal}
                     >
-                      Добавить администратора
+                      {t('buttons.add-admin')}
                     </Button>
                     <Button
                       style={{ width: "100%" }}
@@ -223,7 +226,7 @@ function AdminPanel() {
                       className="mt-2"
                       onClick={handleShowCountEntriesModal}
                     >
-                      Количество клиентов
+                      {t('buttons.count-clients')}
                     </Button>
                   </Card.Body>
                 </Card>
