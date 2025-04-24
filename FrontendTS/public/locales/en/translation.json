@@ -104,6 +104,8 @@
     "to-login": "Go to login page"
   },
   "errors": {
+    "login-error": "Login already exists",
+    "table-number-error": "Table number already exists",
     "no-permission": "No access",
     "unauthorized": "You do not have permission to access this page.",
     "not-found": "Page not found",
@@ -112,5 +114,6 @@
     "first-name-error": "The first name must consist of letters from the Russian or Kazakh alphabets.",
     "last-name-error": "The last name must consist of letters from the Russian or Kazakh alphabets.",
     "ticket-issue-error": "An error occurred while issuing the ticket."
-  }
+  },
+  "loading": "Loading..."
 }

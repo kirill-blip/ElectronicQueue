@@ -1,6 +1,7 @@
 import User from "./User";
 
 export interface Entry {
+    EntryId: number;
     TicketNumber: number;
     UserId: number;
     AdminId: number;

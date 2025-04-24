@@ -77,8 +77,6 @@ function TicketIssue() {
     setShowUpdateModal(true);
   };
 
-  console.log("Fetched Ticket Data: ", fetchedTicketData.EntryStatus);
-
   return (
     <div
       className="container d-flex justify-content-center align-items-center"
@@ -94,15 +92,18 @@ function TicketIssue() {
             errorMessage={errorMessage}
           />
         )}
+
       {(fetchedTicketData.EntryStatus === EntryStatus.Waiting ||
         fetchedTicketData.EntryStatus === EntryStatus.Processing) && (
         <TicketIssueInfo
           fetchedTicketData={fetchedTicketData}
           fetchedAdmin={fetchedAdmin}
           fetchedUser={fetchedUser}
+          setRefreshKey={setRefreshKey}
           handleUpdate={handleUpdate}
         />
       )}
+
       {fetchedUser.FirstName !== "" &&
         fetchedTicketData.EntryStatus !== EntryStatus.Waiting &&
         fetchedTicketData.EntryStatus !== EntryStatus.Processing && (

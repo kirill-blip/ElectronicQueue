@@ -11,7 +11,7 @@ const (
 )
 
 type Entry struct {
-	Id           int
+	Id           int       `json:"id"`
 	TicketNumber int       `json:"ticket_number"`
 	UserId       int       `json:"user_id"`
 	AdminId      int       `json:"admin_id"`

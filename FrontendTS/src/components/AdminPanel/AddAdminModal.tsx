@@ -1,4 +1,4 @@
-import { Button, Form, Modal } from "react-bootstrap";
+import { Alert, Button, Form, Modal } from "react-bootstrap";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import PasswordForm from "../PasswordForm";
 import { useState } from "react";
@@ -11,6 +11,8 @@ interface AddAdminModalProps {
 }
 
 function AddAdminModal({ show, onHide }: AddAdminModalProps) {
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const [admin, setAdmin] = useState<Admin>({
     FirstName: "",
     LastName: "",
@@ -45,70 +47,98 @@ function AddAdminModal({ show, onHide }: AddAdminModalProps) {
       );
 
       if (!response.ok) {
-        throw new Error(response.statusText);
+        const errorText = await response.json();
+
+        if (errorText.error === "login already exist") {
+          setErrorMessage(t("errors.login-error"));
+        }
+
+        if (errorText.error === "table already exist") {
+          setErrorMessage(t("errors.table-number-error"));
+        }
+
+        if (errorText.error === "first name isn't valid") {
+          setErrorMessage(t("errors.first-name-error"));
+        }
+
+        if (errorText.error === "last name isn't valid") {
+          setErrorMessage(t("errors.last-name-error"));
+        }
       } else {
         onHide();
       }
     } catch (error) {}
   };
-  
+
   const { t } = useTranslation();
 
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>{ t('admin-panel.add-admin') }</Modal.Title>
+        <Modal.Title>{t("admin-panel.add-admin")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>{ t('login.first-name') }</Form.Label>
+            <Form.Label>{t("login.first-name")}</Form.Label>
             <Form.Control
               type="text"
               name="FirstName"
-              placeholder={t('login.first-name')}
+              placeholder={t("login.first-name")}
               value={admin.FirstName}
               onChange={handleInputChange}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>{t('login.first-name')}</Form.Label>
+            <Form.Label>{t("login.first-name")}</Form.Label>
             <Form.Control
               type="text"
               name="LastName"
-              placeholder={t('login.last-name')}
+              placeholder={t("login.last-name")}
               value={admin.LastName}
               onChange={handleInputChange}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>{t('login.login')}</Form.Label>
+            <Form.Label>{t("login.login")}</Form.Label>
             <Form.Control
               type="text"
               name="Login"
-              placeholder={t('login.login')}
+              placeholder={t("login.login")}
               value={admin.Login}
               onChange={handleInputChange}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>{t('login.password')}</Form.Label>
+            <Form.Label>{t("login.password")}</Form.Label>
             <PasswordForm
               handleInputChange={handleInputChange}
               password={admin.Password}
             />
           </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("login.table-number")}</Form.Label>
+            <Form.Control
+              type="number"
+              name="TableNumber"
+              placeholder={t("login.table-number")}
+              value={admin.TableNumber}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
         </Form>
-        {/* <Alert variant="danger" className="mt-3">
-          Неверный логин или пароль
-        </Alert> */}
+        {errorMessage !== "" && (
+          <Alert variant="danger" className="mt-3">
+            {errorMessage}
+          </Alert>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
-          {t('buttons.close')}
+          {t("buttons.close")}
         </Button>
         <Button variant="primary" onClick={handleSumbit}>
-          {t('buttons.add')}
+          {t("buttons.add")}
         </Button>
       </Modal.Footer>
     </Modal>

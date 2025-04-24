@@ -48,7 +48,10 @@ const fetchAdminInfo = async (admin_id:number) => {
 }
 
 export const useGetTicketInfo = (refreshKey: number) => {
+    console.log("Refresh key: ", refreshKey)
+
     const [ticketData, setTicketData] = useState<Entry>({
+        EntryId: 0,
         UserId: 0,
         AdminId: 0,
         TicketNumber: 0,
@@ -81,9 +84,8 @@ export const useGetTicketInfo = (refreshKey: number) => {
 
                 const ticketResponse = await fetchTicketData();
 
-                console.log("Ticket Response: ", ticketResponse)
-
                 setTicketData({
+                    EntryId: ticketResponse.id,
                     UserId: ticketResponse.user_id,
                     AdminId: ticketResponse.admin_id,
                     TicketNumber: ticketResponse.ticket_number,
@@ -103,6 +105,26 @@ export const useGetTicketInfo = (refreshKey: number) => {
                 console.log("Ticket info fetched successfully.");
             }
         }
+
+        setTicketData({
+            EntryId: 0,
+            UserId: 0,
+            AdminId: 0,
+            TicketNumber: 0,
+            EntryStatus: EntryStatus.None,
+        });
+
+        setUser({
+            FirstName: "",
+            LastName: "",
+            PhoneNumber: "",
+        });
+
+        setAdmin({
+            FirstName: "",
+            LastName: "",
+            TableNumber: 0,
+        });
 
         fetchTicketInfo();
     }, [refreshKey]);

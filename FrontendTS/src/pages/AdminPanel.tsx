@@ -78,12 +78,7 @@ function AdminPanel() {
   };
 
   const handleAcceptClient = async () => {
-    localStorage.removeItem("Entry");
-
     const status = 'accept';
-
-    console.log(status)
-    console.log(entry.EntryId);
 
     const response = await fetch(`http://localhost:8080/api/entry/${status}`, {
       method: "PATCH",
@@ -97,8 +92,7 @@ function AdminPanel() {
     });
 
     if (response.ok) {
-      const data = await response.json();
-      console.log("Client accepted:", data);
+      localStorage.removeItem("Entry");
       setHasClient(false);
     } else {
       const errorData = await response.json();
@@ -106,9 +100,27 @@ function AdminPanel() {
     }
   };
 
-  const handleRejectClient = () => {
-    localStorage.removeItem("Entry");
-    setHasClient(false);
+  const handleRejectClient = async () => {
+    const status = 'cancel';
+
+    const response = await fetch(`http://localhost:8080/api/entry/${status}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        entry_id: entry.EntryId,
+      }),
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      localStorage.removeItem("Entry");
+      setHasClient(false);
+    } else {
+      const errorData = await response.json();
+      console.error("Error rejecting client:", errorData);
+    }
   };
 
   const handleLogout = useLogout();

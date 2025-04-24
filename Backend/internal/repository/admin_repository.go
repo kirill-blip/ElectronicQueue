@@ -49,7 +49,7 @@ func (r *AdminRepositoryImpl) GetAdmins() ([]models.Admin, error) {
 	for rows.Next() {
 		var admin models.Admin
 
-		if err := rows.Scan(&admin.Login, &admin.Password, &admin.TableNumber); err != nil {
+		if err := rows.Scan(&admin.FirstName, &admin.LastName, &admin.Login, &admin.TableNumber); err != nil {
 			slog.Warn(err.Error())
 			return nil, apperrors.ProblemWithDB
 		}
