@@ -15,6 +15,7 @@ type EntryRepository interface {
 	GetUserRepo(adminId int) (models.GetEntry, error)
 	GetCountEntry() (int, error)
 	ChangeStatusRepo(entryId int, status string) error
+	GetDashBoardRepo() ([]models.Table, error)
 }
 
 type EntryRepositoryImpl struct {
@@ -217,4 +218,34 @@ func (e *EntryRepositoryImpl) ChangeStatusRepo(entryId int, status string) error
 	`, status, entryId)
 
 	return err
+}
+
+func (e *EntryRepositoryImpl) GetDashBoardRepo() ([]models.Table, error) {
+	var tables []models.Table
+
+	rows, err := e.db.Query(`
+		SELECT a.table_number, e.ticket_number
+		FROM "entry" e
+		JOIN "admin" a 
+		    ON e.admin_id = a.id
+		WHERE e.status = 'Processing'
+		ORDER BY a.table_number;
+`)
+
+	if err != nil {
+		return tables, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var table models.Table
+
+		if err := rows.Scan(&table.TableNumber, &table.TicketNumber); err != nil {
+			return tables, err
+		}
+
+		tables = append(tables, table)
+	}
+
+	return tables, nil
 }

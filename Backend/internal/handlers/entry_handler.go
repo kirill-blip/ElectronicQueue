@@ -217,3 +217,19 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 
 	utils.ResponseInJSON(w, http.StatusOK, map[string]string{"status": status})
 }
+
+func (e *EntryHandler) GetDashBoard(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	board, err := e.entryService.GetDashBoardService()
+	if err != nil {
+		slog.Warn(err.Error())
+
+		statusCode := apperrors.FindErrorCode(err)
+
+		utils.ErrorInJSON(w, statusCode, err)
+		return
+	}
+
+	utils.ResponseInJSON(w, http.StatusOK, board)
+}

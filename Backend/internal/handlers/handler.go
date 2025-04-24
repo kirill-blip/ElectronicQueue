@@ -43,6 +43,7 @@ func InitHandler(db *sql.DB) (*http.ServeMux, error) {
 	mux.HandleFunc("GET /api/entry/get-entry", middleware.AdminAuthMiddleware(entryHandler.GetUser))
 	mux.HandleFunc("GET /api/entry/get-count", middleware.AdminAuthMiddleware(entryHandler.GetCountEntryHandler))
 	mux.HandleFunc("PATCH /api/entry/{status}", middleware.UserOrAdminMiddleware(entryHandler.ChangeStatus))
+	mux.HandleFunc("GET /api/entry/dashboard", func(w http.ResponseWriter, r *http.Request) {})
 
 	return mux, nil
 }
