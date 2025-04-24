@@ -18,3 +18,8 @@ type Entry struct {
 	Date         time.Time `json:"date"`
 	Status       string    `json:"status"`
 }
+
+type Table struct {
+	TableNumber  int `json:"table_number"`
+	TicketNumber int `json:"ticket_number"`
+}

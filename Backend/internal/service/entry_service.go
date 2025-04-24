@@ -21,6 +21,7 @@ type EntryService interface {
 	GetUserService(adminId int) (models.GetEntry, error)
 	GetCountEntryService() (int, error)
 	ChangeStatusService(entryId int, status string) error
+	GetDashBoardService() ([]models.Table, error)
 }
 
 type EntryServiceImpl struct {
@@ -127,4 +128,8 @@ func (e *EntryServiceImpl) GetCountEntryService() (int, error) {
 
 func (e *EntryServiceImpl) ChangeStatusService(entryId int, status string) error {
 	return e.entryRepository.ChangeStatusRepo(entryId, status)
+}
+
+func (e *EntryServiceImpl) GetDashBoardService() ([]models.Table, error) {
+	return e.entryRepository.GetDashBoardRepo()
 }
