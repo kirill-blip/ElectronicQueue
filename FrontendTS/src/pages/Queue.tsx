@@ -13,16 +13,18 @@ function Queue() {
       <Container>
         <div className="row">
           <div className="col text-center">
-            <h2 className="text-center mb-2">{t('queue.ticket')}</h2>
-            {tickets.map((ticket, index) => (
-                <TicketCard key={index} ticketNumber={ticket.TicketNumber} />
-            ))}
+            <h2 className="text-center mb-2">{t("queue.ticket")}</h2>
+            {tickets.length !== 0 &&
+              tickets.map((ticket, index) => (
+                <TicketCard key={index} ticketNumber={ticket.ticket_number} />
+              ))}
           </div>
           <div className="col">
-            <h2 className="text-center mb-2">{t('queue.table-number')}</h2>
-            {tickets.map((ticket, index) => (
-                <TicketCard key={index} ticketNumber={ticket.TableNumber} />
-            ))}
+            <h2 className="text-center mb-2">{t("queue.table-number")}</h2>
+            {tickets.length !== 0 &&
+              tickets.map((ticket, index) => (
+                <TicketCard key={index} ticketNumber={ticket.table_number} />
+              ))}
           </div>
         </div>
       </Container>
