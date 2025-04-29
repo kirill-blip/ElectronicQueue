@@ -5,7 +5,9 @@ import (
 	"backend/internal/service"
 	"backend/internal/utils"
 	"backend/models"
+	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -204,8 +206,23 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = e.entryService.ChangeStatusService(entry.ID, status)
+	url := fmt.Sprintf("https://localhost:7069/api/notify/%d", entry.ID)
 
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		slog.Error("Error making request:", "error", err.Error())
+		utils.ErrorInJSON(w, http.StatusBadRequest, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	err = e.entryService.ChangeStatusService(entry.ID, status)
 	if err != nil {
 		slog.Warn(err.Error())
 
