@@ -46,7 +46,7 @@ function HeaderFooterManager({
   setFooterType: (footerType: NavbarProps) => void;
 }) {
   const location = useLocation();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (

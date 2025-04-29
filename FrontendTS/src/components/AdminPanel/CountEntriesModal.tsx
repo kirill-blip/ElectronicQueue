@@ -11,7 +11,6 @@ interface CountEntriesModalProps {
 function CountEntriesModal({
   show,
   handleClose,
-  refreshedCount,
 }: CountEntriesModalProps) {
   const [count, setCount] = useState<number>(0);
   const { t } = useTranslation();

@@ -22,7 +22,7 @@ function TicketIssueInfo({
   handleUpdate,
 }: TicketIssueInfoProps) {
   const { t } = useTranslation();
-  const [hasAdmin, setHasAdmin] = useState<boolean>(false);
+  const [hasAdmin] = useState<boolean>(false);
 
   const handleCancelTicket = async () => {
     if (await hasTicketAdmin()) {

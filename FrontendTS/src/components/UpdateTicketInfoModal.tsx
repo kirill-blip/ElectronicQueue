@@ -1,5 +1,4 @@
 import { Button, Form, Modal } from "react-bootstrap";
-import TicketIssueForm, { TicketIssueFormProps } from "./TicketIssueForm";
 import { PhoneInput } from "react-international-phone";
 import User from "../models/User";
 import { useState } from "react";
@@ -21,7 +20,7 @@ function UpdateTicketInfoModal({
   const { t } = useTranslation();
 
   const [user, setUser] = useState<User>(initialUser);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorMessage] = useState<string>("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

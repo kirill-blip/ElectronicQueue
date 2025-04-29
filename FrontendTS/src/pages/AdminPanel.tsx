@@ -19,7 +19,7 @@ function AdminPanel() {
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
   const [showCountEntriesModal, setShowCountEntriesModal] = useState(false);
 
-  const { admin, error, loading } = useAdmin();
+  const { admin, loading } = useAdmin();
 
   const { t } = useTranslation()
 
