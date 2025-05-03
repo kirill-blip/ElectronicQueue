@@ -16,7 +16,7 @@ export interface EntryInfo {
 
 export enum EntryStatus {
     None = "None",
-    Waiting = "Waiting",
+    WaitForProcessing = "WaitForProcessing",
     Processing = "Processing",
     CanceledByUser = "CanceledByUser",
     Canceled = "Canceled",

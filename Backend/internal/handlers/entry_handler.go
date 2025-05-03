@@ -153,6 +153,8 @@ func (e *EntryHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	Notify(w, entry.EntryId)
+
 	utils.ResponseInJSON(w, http.StatusOK, entry)
 }
 
@@ -206,22 +208,6 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := fmt.Sprintf("https://localhost:7069/api/notify/%d", entry.ID)
-
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
-	}
-
-	resp, err := client.Get(url)
-	if err != nil {
-		slog.Error("Error making request:", "error", err.Error())
-		utils.ErrorInJSON(w, http.StatusBadRequest, err)
-		return
-	}
-	defer resp.Body.Close()
-
 	err = e.entryService.ChangeStatusService(entry.ID, status)
 	if err != nil {
 		slog.Warn(err.Error())
@@ -231,6 +217,8 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorInJSON(w, statusCode, err)
 		return
 	}
+
+	Notify(w, entry.ID)
 
 	utils.ResponseInJSON(w, http.StatusOK, map[string]string{"status": status})
 }
@@ -249,4 +237,27 @@ func (e *EntryHandler) GetDashBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.ResponseInJSON(w, http.StatusOK, board)
+}
+
+func Notify(w http.ResponseWriter, id int) {
+	url := fmt.Sprintf("https://host.docker.internal:7069/api/notify/%d", id)
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		slog.Error("Error making request:", "error", err)
+		utils.ErrorInJSON(w, http.StatusBadRequest, err)
+	}
+	defer resp.Body.Close()
+
+	slog.Info("Response status:", "status", resp.Status)
+
+	if resp.StatusCode != http.StatusOK {
+		utils.ErrorInJSON(w, resp.StatusCode, fmt.Errorf("unexpected status code: %d", resp.StatusCode))
+	}
 }

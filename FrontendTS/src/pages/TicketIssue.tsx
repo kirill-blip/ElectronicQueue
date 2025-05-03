@@ -93,7 +93,7 @@ function TicketIssue() {
           />
         )}
 
-      {(fetchedTicketData.EntryStatus === EntryStatus.Waiting ||
+      {(fetchedTicketData.EntryStatus === EntryStatus.WaitForProcessing ||
         fetchedTicketData.EntryStatus === EntryStatus.Processing) && (
         <TicketIssueInfo
           fetchedTicketData={fetchedTicketData}
@@ -105,7 +105,7 @@ function TicketIssue() {
       )}
 
       {fetchedUser.FirstName !== "" &&
-        fetchedTicketData.EntryStatus !== EntryStatus.Waiting &&
+        fetchedTicketData.EntryStatus !== EntryStatus.WaitForProcessing &&
         fetchedTicketData.EntryStatus !== EntryStatus.Processing && (
           <TicketIssueRecreate
             user={fetchedUser}

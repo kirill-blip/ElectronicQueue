@@ -3,9 +3,10 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log/slog"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 func ConnectDb() (*sql.DB, error) {

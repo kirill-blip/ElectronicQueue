@@ -34,7 +34,7 @@ func (e *EntryRepositoryImpl) GetEntry(id int) (models.Entry, error) {
         SELECT *
         FROM "entry"
         WHERE user_id = $1
-		AND status IN ('Waiting', 'Processing')
+		AND status IN ('WaitForProcessing', 'Processing')
         AND date::date = CURRENT_DATE;
     `, id).Scan(&entry.Id, &entry.TicketNumber, &entry.UserId, &adminId, &entry.Date, &entry.Status)
 
@@ -73,7 +73,7 @@ func (e *EntryRepositoryImpl) AddEntry(user models.User) (int, error) {
 
 	_, err = tx.Exec(`
 		INSERT INTO entry (ticket_number, user_id, status)
-		VALUES ($1, $2, 'Waiting')
+		VALUES ($1, $2, 'WaitForProcessing')
 `, user.Ticket, userId)
 
 	if err != nil {
@@ -91,7 +91,7 @@ func (e *EntryRepositoryImpl) AddEntry(user models.User) (int, error) {
 func (e *EntryRepositoryImpl) GenerateEntryRepo(entry models.Entry) error {
 	_, err := e.db.Exec(`
 		INSERT INTO entry (ticket_number, user_id, status)
-		VALUES ($1, $2, 'Waiting')
+		VALUES ($1, $2, 'WaitForProcessing')
 `, entry.TicketNumber, entry.UserId)
 
 	return err
@@ -147,7 +147,7 @@ func (e *EntryRepositoryImpl) GetUserRepo(adminId int) (models.GetEntry, error) 
 	err = tx.QueryRow(`
 		SELECT id, user_id 
 		FROM entry 
-		WHERE status = 'Waiting'
+		WHERE status = 'WaitForProcessing'
 		AND date::date = CURRENT_DATE;
 	`).Scan(&entryId, &userId)
 
@@ -199,7 +199,7 @@ func (e *EntryRepositoryImpl) GetCountEntry() (int, error) {
 	err := e.db.QueryRow(`
 		SELECT COUNT(*) 
 		FROM entry
-		WHERE status = 'Waiting'
+		WHERE status = 'WaitForProcessing'
 		AND date::date = CURRENT_DATE;
 `).Scan(&count)
 
