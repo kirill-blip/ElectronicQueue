@@ -153,7 +153,7 @@ func (e *EntryHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Notify(w, entry.EntryId)
+	// Notify(w, entry.EntryId)
 
 	utils.ResponseInJSON(w, http.StatusOK, entry)
 }
@@ -218,7 +218,7 @@ func (e *EntryHandler) ChangeStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Notify(w, entry.ID)
+	// Notify(w, entry.ID)
 
 	utils.ResponseInJSON(w, http.StatusOK, map[string]string{"status": status})
 }
@@ -251,13 +251,11 @@ func Notify(w http.ResponseWriter, id int) {
 	resp, err := client.Get(url)
 	if err != nil {
 		slog.Error("Error making request:", "error", err)
-		utils.ErrorInJSON(w, http.StatusBadRequest, err)
 	}
-	defer resp.Body.Close()
+
+	if resp != nil{
+		defer resp.Body.Close()
+	}
 
 	slog.Info("Response status:", "status", resp.Status)
-
-	if resp.StatusCode != http.StatusOK {
-		utils.ErrorInJSON(w, resp.StatusCode, fmt.Errorf("unexpected status code: %d", resp.StatusCode))
-	}
 }

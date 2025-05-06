@@ -14,7 +14,7 @@ func LoginValid(login string) error {
 		return apperrors.LenLogin
 	}
 
-	regex := `^[a-zA-Z0-9_-]{6,25}$`
+	regex := `^[a-zA-Z0-9_-]{4,25}$`
 	match, _ := regexp.MatchString(regex, login)
 
 	if !match {
